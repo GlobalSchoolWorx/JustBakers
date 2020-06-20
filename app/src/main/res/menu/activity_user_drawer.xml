@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_yourcart"
+            android:icon="@drawable/icons8_home_page_30"
+            android:title="Home" />
+
+        <item
+            android:id="@+id/nav_placedorders"
+            android:icon="@drawable/icons8_purchase_order_48"
+            android:title="@string/your_orders" />
+        <!--
+        <item
+            android:id="@+id/nav_deliveredorders"
+            android:icon="@mipmap/ic_launcher"
+            android:title="Orders Delivered" />
+
+
+        <item
+            android:id="@+id/nav_laptops"
+            android:icon="@mipmap/ic_launcher"
+            android:title="LAPTOPS" />
+        <item
+            android:id="@+id/nav_fashion"
+            android:icon="@mipmap/ic_launcher"
+            android:title="FASHION" />
+        <item
+            android:id="@+id/nav_footwear"
+            android:icon="@mipmap/ic_launcher"
+            android:title="FOOTWEAR" />
+        <item
+            android:id="@+id/nav_sports"
+            android:icon="@mipmap/ic_launcher"
+            android:title="SPORTS" />
+-->
+    </group>
+
+    <item android:title="COMMUNICATE">
+        <menu>
+            <!--
+            <item
+                android:id="@+id/nav_source"
+                android:icon="@drawable/ic_menu_share"
+                android:title="SOURCE" />
+                -->
+            <item
+                android:id="@+id/nav_contact"
+                android:icon="@drawable/ic_menu_send"
+                android:title="CONTACT US" />
+        </menu>
+    </item>
+
+</menu>

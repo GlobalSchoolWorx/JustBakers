@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto">
+
+<LinearLayout
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wall2"
+    tools:context=".gpay.TempCheckoutActivity">
+
+    <AutoCompleteTextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/back"
+        android:cursorVisible="true"
+        android:fontFamily="serif"
+        android:hint="Your Name"
+        android:includeFontPadding="true"
+        android:lineSpacingExtra="12sp"
+        android:maxLines="1"
+        android:popupBackground="@drawable/card_shadow"
+        android:singleLine="true"
+        android:text=""
+        android:textColor="@color/colorWhite"
+        android:textColorHighlight="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
+        android:textColorLink="@color/colorWhite"
+        android:textCursorDrawable="@drawable/blackback"
+
+        />
+    <AutoCompleteTextView
+        android:id="@+id/contact"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/back"
+        android:cursorVisible="true"
+        android:fontFamily="serif"
+        android:hint="Your Contact Number"
+        android:includeFontPadding="true"
+        android:inputType="number"
+        android:lineSpacingExtra="12sp"
+        android:maxLines="1"
+        android:popupBackground="@drawable/card_shadow"
+        android:singleLine="true"
+        android:text=""
+        android:textColor="@color/colorWhite"
+        android:textColorHighlight="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
+        android:textColorLink="@color/colorWhite"
+        android:textCursorDrawable="@drawable/blackback"
+
+         />
+
+    <Spinner
+        android:id="@+id/area_list"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/back"
+      >
+
+    </Spinner>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="Select your society where delivery of products is required." />
+
+    <ListView
+        android:id="@+id/society_list"
+        android:layout_width="match_parent"
+        android:textColor="@color/colorWhite"
+        android:layout_height="100dp"
+        android:layout_margin="20dp"
+        android:layout_marginTop="104dp"
+        android:background="@color/colorWhite"
+        android:listSelector="@drawable/back"
+     >
+
+    </ListView>
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="Your Building and Flat Number." />
+
+    <AutoCompleteTextView
+        android:id="@+id/flatNumber"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/back"
+        android:cursorVisible="true"
+        android:fontFamily="serif"
+        android:includeFontPadding="true"
+        android:lineSpacingExtra="12sp"
+        android:maxLines="1"
+        android:popupBackground="@drawable/card_shadow"
+        android:singleLine="true"
+        android:text=""
+        android:textColor="@color/colorWhite"
+        android:textColorHighlight="@color/colorWhite"
+        android:textColorHint="@color/colorWhite"
+        android:textColorLink="@color/colorWhite"
+        android:textCursorDrawable="@drawable/blackback"
+
+        />
+    <info.hoang8f.widget.FButton
+    android:id="@+id/placeOrderButton"
+    android:layout_width="169dp"
+    android:layout_height="57dp"
+    android:layout_margin="45dp"
+    android:layout_gravity="center_horizontal"
+    android:text="Verify OTP"
+    android:textColor="@color/colorWhite"
+    android:textSize="18sp"
+    android:textStyle="bold"
+    fbutton:cornerRadius="5dp"
+    fbutton:fButtonColor="#AE6F33"
+    fbutton:shadowColor="#AE6F33" />
+
+    <info.hoang8f.widget.FButton
+        android:id="@+id/updateAddressButton"
+        android:layout_width="169dp"
+        android:layout_height="57dp"
+        android:layout_margin="45dp"
+        android:layout_gravity="center_horizontal"
+        android:text="UPDATE"
+        android:textColor="@color/colorWhite"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        fbutton:cornerRadius="5dp"
+        fbutton:fButtonColor="#AE6F33"
+        fbutton:shadowColor="#AE6F33" />
+
+</LinearLayout>
+</ScrollView>

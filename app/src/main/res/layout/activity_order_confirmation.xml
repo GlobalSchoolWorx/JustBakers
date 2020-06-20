@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".OrderConfirmationActivity">
+
+    <LinearLayout
+        android:id="@+id/SHIMMERTEXTVIEWS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/wall2"
+        >
+
+        <com.romainpiel.shimmer.ShimmerTextView
+            android:id="@+id/Tagline"
+            android:layout_width="321dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="30dp"
+            android:fontFamily="serif"
+            android:text="Thank you for placing the order.\n Just Bakers will soon contact you and confirm the place and time of delivery.\n Delivery would be done in next 36 hours."
+            android:textAlignment="center"
+            android:textColor="#0B0A0A"
+            android:textSize="30sp"
+            app:reflectionColor="@color/fbutton_color_carrot"
+            tools:layout_editor_absoluteX="51dp"
+            tools:layout_editor_absoluteY="88dp" />
+
+        <info.hoang8f.widget.FButton
+            android:id="@+id/backToHomeBtn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="serif"
+            android:includeFontPadding="true"
+            android:lineSpacingExtra="12sp"
+            android:maxLines="200"
+            android:singleLine="false"
+            android:stretchColumns="1,2,3,4"
+            android:layout_margin="20dp"
+            android:text="OK"
+            android:textColor="@color/colorWhite"
+            android:textColorHighlight="@color/colorWhite"
+            android:textColorLink="@color/fbutton_color_carrot"
+            fbutton:cornerRadius="5dp"
+            fbutton:fButtonColor="#0B0A0A"
+            fbutton:shadowColor="@color/fbutton_color_carrot"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp" />
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_yourcart"
+            android:icon="@drawable/cart"
+            android:actionLayout="@layout/action_jb_cart_layout"
+            android:title="@string/menu_yourcart" />
+        <item
+            android:id="@+id/nav_placedorders"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:actionLayout="@layout/action_jb_cart_layout"
+            android:title="@string/menu_placedorders" />
+        <item
+            android:id="@+id/nav_deliveredorders"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:actionLayout="@layout/action_jb_cart_layout"
+            android:title="@string/menu_deliveredorders" />
+    </group>
+</menu>
