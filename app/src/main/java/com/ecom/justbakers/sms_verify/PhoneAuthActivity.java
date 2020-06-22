@@ -31,8 +31,8 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
-import java.util.concurrent.TimeUnit;
 
+import java.util.concurrent.TimeUnit;
 
 import static com.ecom.justbakers.sms_verify.AppSignatureHelper.TAG;
 
@@ -176,6 +176,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
             }
 
         };
+
         PhoneAuthProvider.getInstance().verifyPhoneNumber(mPhoneNumber,     // Phone Number
                 60,              // Timeout duration
                 TimeUnit.SECONDS,   // Unit of timeout
@@ -183,7 +184,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
                 mCallbacks);        // OnVerificationStateChangedCallbacks
         // [END start_phone_auth]
 
-        mVerificationInProgress = true;;
+        mVerificationInProgress = true;
     }
 
 

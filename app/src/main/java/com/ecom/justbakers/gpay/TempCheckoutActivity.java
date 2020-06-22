@@ -159,10 +159,6 @@ public class TempCheckoutActivity extends AppCompatActivity {
                 area = areaListView.getSelectedItem().toString();
                 society = societyListView.getItemAtPosition(selectedSocietyIndex).toString();
 
-                //requestHint();
-                /** Start Listening SMSRetriever ***/
-                getRetrieverClient();
-                //sendSMSMessage(phoneNo);
                 if(name.length() < 3 ) {
                     Toast.makeText(getApplicationContext(), "Please enter a valid Name.",
                             Toast.LENGTH_LONG).show();
@@ -199,10 +195,6 @@ public class TempCheckoutActivity extends AppCompatActivity {
                 flatNumber = tvFlatNumber.getText().toString();
                 area = areaListView.getSelectedItem().toString();
 
-
-                //requestHint();
-                /** Start Listening SMSRetriever ***/
-                getRetrieverClient();
                 if (flatNumber == null || flatNumber.length() < 3) {
                     Toast.makeText(getApplicationContext(), "Please enter a valid Flat Number.",
                             Toast.LENGTH_LONG).show();
@@ -243,69 +235,6 @@ public class TempCheckoutActivity extends AppCompatActivity {
         return valid;
     }
 
-    public  void getRetrieverClient() {
-        // Get an instance of SmsRetrieverClient, used to start listening for a matching
-        // SMS message.
-        SmsRetrieverClient client = SmsRetriever.getClient(this);
-
-        // Starts SmsRetriever, which waits for ONE matching SMS message until timeout
-        // (5 minutes). The matching SMS message will be sent via a Broadcast Intent with
-        // action SmsRetriever#SMS_RETRIEVED_ACTION.
-        Task<Void> task = client.startSmsRetriever();
-
-        // Listen for success/failure of the start Task. If in a background thread, this
-        // can be made blocking using Tasks.await(task, [timeout]);
-
-        task.addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-
-                String otp_text = "Waiting for the OTP";
-            }
-
-        });
-
-        task.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                // Failed to start retriever, inspect Exception for more details
-                String otp_text = "Cannot Start SMS Retriever";
-            }
-        });
-    }
-    // Construct a request for phone numbers and show the picker
-    private void requestHint() throws IntentSender.SendIntentException {
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-        // Build a GoogleSignInClient with the options specified by gso.
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        HintRequest hintRequest = new HintRequest.Builder()
-                .setPhoneNumberIdentifierSupported(true)
-                .build();
-
-
-        PendingIntent intent = Auth.CredentialsApi.getHintPickerIntent(
-                mGoogleSignInClient.asGoogleApiClient(), hintRequest);
-        startIntentSenderForResult(intent.getIntentSender(),
-                RESOLVE_HINT, null, 0, 0, 0);
-    }
-
-
-    // Obtain the phone number from the result
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESOLVE_HINT) {
-            if (resultCode == RESULT_OK) {
-                Credential credential = data.getParcelableExtra(Credential.EXTRA_KEY);
-                // credential.getId();  <-- will need to process phone number string
-            }
-        }
-    }
 
     public void onAreaListButtonClickListener(String area) {
         Firebase societyRef = new Firebase("https://justbakers-285be.firebaseio.com/deliveryAddress").child(area);
@@ -336,39 +265,6 @@ public class TempCheckoutActivity extends AppCompatActivity {
         });
     };
 
-
-    protected void sendSMSMessage(String phoneNo) {
-
-        PhoneAuthActivity ph = new PhoneAuthActivity();
-
-        ph.signInWithPhoneNumber();
-
-        verification_code = new Random().hashCode();
-        verification_code = verification_code / 10000;
-        message = "<#> JustBakers: Your verification code is" + verification_code + "\n";
-
-        AppSignatureHelper obj = new AppSignatureHelper(getApplicationContext());
-        ArrayList<String> strArr = obj.getAppSignatures();
-        message = message + strArr;
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.SEND_SMS)) {
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.SEND_SMS},
-                        MY_PERMISSIONS_REQUEST_SEND_SMS);
-            }
-        }
-        else {
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNo, null, message, null, null);
-            Toast.makeText(getApplicationContext(), "OTP sent.",
-                    Toast.LENGTH_LONG).show();
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
