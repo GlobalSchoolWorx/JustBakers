@@ -9,13 +9,11 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ecom.justbakers.CartActivity;
 import com.ecom.justbakers.Classes.ProductClass;
 import com.ecom.justbakers.DescriptionActivity;
 import com.ecom.justbakers.R;
@@ -102,7 +100,7 @@ public class CustomCartListAdapter extends BaseAdapter {
 
 
         item.ProductTitle.setText(curProduct.getName());
-        item.PriceTextView.setText("Rs. "+curProduct.getprice());
+        item.PriceTextView.setText("Rs. "+curProduct.getPrice());
         item.SellerTextView.setText(curProduct.getSeller());
         item.ProductQuantity.setText(curProduct.getQuantity().toString() );
         item.IncrQuantity.setTag(position);

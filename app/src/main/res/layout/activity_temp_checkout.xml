@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:fbutton="http://schemas.android.com/apk/res-auto">
 
 <LinearLayout
-    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -35,11 +34,32 @@
         android:textCursorDrawable="@drawable/blackback"
 
         />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <TextView
+            android:id="@+id/tvCountryCode"
+            android:textColor="@color/colorWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="20dp"
+            android:textSize="20sp"
+            android:background="@drawable/back"
+            android:layout_gravity="center_vertical"
+            android:textStyle="bold"
+            android:popupBackground="@drawable/card_shadow"
+            android:text="\n +91  " />
+
     <AutoCompleteTextView
         android:id="@+id/contact"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:layout_margin="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/back"
         android:cursorVisible="true"
         android:fontFamily="serif"
@@ -58,6 +78,7 @@
         android:textCursorDrawable="@drawable/blackback"
 
          />
+    </LinearLayout>
 
     <Spinner
         android:id="@+id/area_list"
@@ -79,18 +100,18 @@
         android:layout_marginRight="20dp"
         android:text="Select your society where delivery of products is required." />
 
-    <ListView
+    <Spinner
         android:id="@+id/society_list"
         android:layout_width="match_parent"
-        android:textColor="@color/colorWhite"
-        android:layout_height="100dp"
+        android:layout_height="50dp"
         android:layout_margin="20dp"
         android:layout_marginTop="104dp"
-        android:background="@color/colorWhite"
-        android:listSelector="@drawable/back"
-     >
+        android:fastScrollAlwaysVisible="true"
+        android:background="@drawable/back"
+        android:scrollbars="vertical"
+        android:textColor="@color/colorWhite">
 
-    </ListView>
+    </Spinner>
 
     <TextView
         android:id="@+id/textView5"

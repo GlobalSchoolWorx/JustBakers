@@ -7,10 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".AdminActivity">
 
+    <Button
+        android:id="@+id/signOutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign Out" />
+
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_weight="1"
+        android:layout_marginBottom="20dp"
         android:layout_height="0dp"/>
     <ListView
         android:id="@+id/placedView"

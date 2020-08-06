@@ -89,10 +89,10 @@ public class ProductFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     ProductClass post = postSnapshot.getValue(ProductClass.class);
-                    System.out.println(post.getName() + " - " + post.getDescription()+ "-" + post.getprice() + "-"+ post.getId());
+                    System.out.println(post.getName() + " - " + post.getDescription()+ "-" + post.getPrice() + "-"+ post.getId());
                     ProductName.add(post.getName());
                     ProductURL.add(post.getImage());
-                    ProductPrice.add(post.getprice());
+                    ProductPrice.add(post.getPrice());
                     ProductDescription.add(post.getDescription());
                     ProductSeller.add(post.getSeller());
                     ProductCategory.add(post.getCategory());

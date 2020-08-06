@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1013583183216-k873l415hualoapk3e4mf3j58updmi10.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ecom.justbakers",
+            "certificate_hash": "c4a142279107f45030b85d2554670cb1c6093d56"
+          }
+        },
+        {
           "client_id": "1013583183216-9calco3jacqenld01kbnqmnjomapo5h1.apps.googleusercontent.com",
           "client_type": 3
         }

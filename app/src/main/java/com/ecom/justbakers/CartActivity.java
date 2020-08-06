@@ -16,7 +16,6 @@ import com.ecom.justbakers.Classes.ProductClass;
 import com.ecom.justbakers.gpay.TempCheckoutActivity;
 import com.ecom.justbakers.orders.InfoClass;
 import com.ecom.justbakers.orders.OrderClass;
-import com.ecom.justbakers.sms_verify.PhoneAuthActivity;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -26,8 +25,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import static com.ecom.justbakers.UserActivity.customToastDisplay;
 
 public class CartActivity extends AppCompatActivity {
     private static ArrayList<ProductClass> CartProductList;
@@ -117,13 +114,13 @@ public class CartActivity extends AppCompatActivity {
                     ProductClass CartProduct = postSnapshot.getValue(ProductClass.class);
                     ProductClass product = new ProductClass(CartProduct.getName()
                             , CartProduct.getImage()
-                            , CartProduct.getprice()
+                            , CartProduct.getPrice()
                             , CartProduct.getDescription()
                             , CartProduct.getSeller()
                             , CartProduct.getId()
                             , CartProduct.getQuantity()
                             , CartProduct.getLimit());
-                    TotalPrice = TotalPrice + (CartProduct.getprice() * CartProduct.getQuantity());
+                    TotalPrice = TotalPrice + (CartProduct.getPrice() * CartProduct.getQuantity());
                     CartProductList.add(product);
                     ProductID.add(product.getId());
                 }
@@ -168,8 +165,14 @@ public class CartActivity extends AppCompatActivity {
                     });
                     /** SETTING THE ADAPTER IN THE LIST VIEW **/
                     cartlistView.setAdapter(adapter);
-
-                    tv_amount.setText("Total Amount is :      " + TotalPrice.toString()+ "/-");
+                    String str;
+                    if(TotalPrice < 300 ) {
+                        str = "\nDelivery Charges : 30/-   " + "(For Orders less than 300/-)";
+                        TotalPrice = TotalPrice + 30;
+                    } else {
+                        str = "\nDelivery Charges : 0/-   " + "\n(Free delivery for Orders above 300/-)";
+                    }
+                    tv_amount.setText(str + "\nTotal Amount is : " + TotalPrice.toString()+ "/-\n");
                 }
             }
 
@@ -267,7 +270,7 @@ public class CartActivity extends AppCompatActivity {
         // WE HAVE DEFINED NEW VARIABLE FOR CART PRODUCT AS WE ALSO HAVE TO ADD QUANTITY TO CART
         ProductClass CartProduct = new ProductClass(Product.getName()
                 ,Product.getImage()
-                ,Product.getprice()
+                ,Product.getPrice()
                 ,Product.getDescription()
                 ,Product.getSeller()
                 ,Product.getId()
@@ -300,7 +303,7 @@ public class CartActivity extends AppCompatActivity {
             // WE HAVE DEFINED NEW VARIABLE FOR CART PRODUCT AS WE ALSO HAVE TO ADD QUANTITY TO CART
             ProductClass CartProduct = new ProductClass(Product.getName()
                     ,Product.getImage()
-                    ,Product.getprice()
+                    ,Product.getPrice()
                     ,Product.getDescription()
                     ,Product.getSeller()
                     ,Product.getId()

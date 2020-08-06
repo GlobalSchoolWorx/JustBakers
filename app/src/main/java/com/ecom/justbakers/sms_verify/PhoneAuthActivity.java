@@ -4,14 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.ecom.justbakers.AdminActivity;
 import com.ecom.justbakers.LoginActivity;
+import com.ecom.justbakers.MainActivity;
 import com.ecom.justbakers.R;
 import com.ecom.justbakers.UserActivity;
 import com.ecom.justbakers.gpay.TempCheckoutActivity;
@@ -32,6 +35,8 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
 import static com.ecom.justbakers.sms_verify.AppSignatureHelper.TAG;
@@ -80,7 +85,13 @@ public class PhoneAuthActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             //verification successful we will start the profile activity
-                            storeDetailsInDatabase(LoginActivity.getDefaults("UserID", getApplicationContext()), mName, mPhoneNumber , mArea, mSociety, mFlatNumber );
+                            storeDetailsInDatabase(LoginActivity.getDefaults("UserID", getApplicationContext()), LoginActivity.getDefaults("Gmail", getApplicationContext()),
+                                                                              mName, mPhoneNumber , mArea, mSociety, mFlatNumber );
+                            LoginActivity.setDefaults("Name", mName, getApplicationContext());
+                            LoginActivity.setDefaults("Phone", mPhoneNumber, getApplicationContext());
+                            LoginActivity.setDefaults("Society", mSociety, getApplicationContext());
+                            LoginActivity.setDefaults("Flat", mFlatNumber, getApplicationContext());
+                            LoginActivity.setDefaults("Area", mArea, getApplicationContext());
                             Intent intent = new Intent(PhoneAuthActivity.this, UserActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
@@ -125,26 +136,16 @@ public class PhoneAuthActivity extends AppCompatActivity {
                 // 2 - Auto-retrieval. On some devices Google Play services can automatically
                 //     detect the incoming verification SMS and perform verification without
                 //     user action.
-                Log.d(TAG, "onVerificationCompleted:" + credential);
-                // [START_EXCLUDE silent]
+                Log.i(TAG, "onVerificationCompleted:" + credential);
                 mVerificationInProgress = false;
                 signInWithPhoneAuthCredential(credential);
-                // [END_EXCLUDE]
-
-                // [START_EXCLUDE silent]
-                // Update the UI and attempt sign in with the phone credential
-                //    updateUI(STATE_VERIFY_SUCCESS, credential);
-                // [END_EXCLUDE]
-                //    signInWithPhoneAuthCredential(credential);
             }
 
             @Override
             public void onCodeSent(@NonNull String var1, @NonNull PhoneAuthProvider.ForceResendingToken var2) {
 
                 mVerificationId = var1;
-
-
-
+                Log.i(TAG, "onCodeSent:" + mVerificationId);
             }
 
             @Override
@@ -152,27 +153,18 @@ public class PhoneAuthActivity extends AppCompatActivity {
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
                 Log.w(TAG, "onVerificationFailed", e);
-                // [START_EXCLUDE silent]
                 mVerificationInProgress = false;
-                // [END_EXCLUDE]
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
-                    // [START_EXCLUDE]
-                    //      mBinding.fieldPhoneNumber.setError("Invalid phone number.");
-                    // [END_EXCLUDE]
+                    Log.w(TAG, "onVerificationFailed", e);
+                    Log.i(TAG, "onVerificationFailed" + "Invalid Phone Number");
                 } else if (e instanceof FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
-                    // [START_EXCLUDE]
-                    //  Snackbar.make(findViewById(android.R.id.content), "Quota exceeded.",
-                    //         Snackbar.LENGTH_SHORT).show();
-                    // [END_EXCLUDE]
+                    Log.w(TAG, "onVerificationFailed", e);
+                    Log.i(TAG, "onVerificationFailed" + "SMS quota exceeded");
                 }
 
-                // Show a message and update the UI
-                // [START_EXCLUDE]
-                // updateUI(STATE_VERIFY_FAILED);
-                // [END_EXCLUDE]
             }
 
         };
@@ -188,21 +180,40 @@ public class PhoneAuthActivity extends AppCompatActivity {
     }
 
 
-    public static void storeDetailsInDatabase (String gmail, String name, String phone_number, String area, String society, String flatNumber) {
+    public void storeDetailsInDatabase (String userid, String gmail, String name, String phone_number, String area, String society, String flatNumber) {
 
 
-        String userid[] = gmail.split("@");
-        Firebase custRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userid[0] + "/info");
+     //   String userid = md5(gmail); //gmail.split("@");
+        Firebase custRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userid + "/info");
         InfoClass infoObject = new InfoClass(gmail, name, phone_number, area, society, flatNumber);
         //custRef.child("info").push().setValue(infoObject);
         custRef.setValue(infoObject);
 
     }
 
+    public static String md5(String s) {
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuffer hexString = new StringBuffer();
+            for (int i=0; i<messageDigest.length; i++)
+                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+
+            return hexString.toString();
+        }catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     public static void storeAddressDetailsInDatabase (String gmail, String area, String society, String flatNumber) {
 
-        String userid[] = gmail.split("@");
-        Firebase custRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userid[0] + "/info");
+        String userid = md5 (gmail);
+        Firebase custRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userid + "/info");
 
         //custRef.child("info").push().setValue(infoObject);
         custRef.child("flatNumber").setValue(flatNumber);

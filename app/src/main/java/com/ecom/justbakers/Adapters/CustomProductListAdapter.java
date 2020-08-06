@@ -1,19 +1,35 @@
 package com.ecom.justbakers.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ecom.justbakers.Classes.ProductClass;
+import com.ecom.justbakers.DescriptionActivity;
 import com.ecom.justbakers.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+
+import static com.ecom.justbakers.sms_verify.PhoneAuthActivity.md5;
+
 /**
  * Created by brainbreaker. ADAPTER FOR SHOWING PRODUCT LIST IN USER ACTIVITY
  */
@@ -104,8 +120,10 @@ public class CustomProductListAdapter extends BaseAdapter {
             viewHolder.quantity.setVisibility(View.GONE);
             viewHolder.addItem.setVisibility(View.GONE);
             viewHolder.subItem.setVisibility(View.GONE);
-        }
 
+            viewHolder.addToCart.setVisibility(View.VISIBLE);
+        }
+        viewHolder.ProductImage.setTag(position);
         viewHolder.addToCart.setTag(position);
         viewHolder.bargain.setTag(position);
         viewHolder.addItem.setTag(position);
@@ -138,28 +156,63 @@ public class CustomProductListAdapter extends BaseAdapter {
             }
         });
 
-        viewHolder.bargain.setOnClickListener(new View.OnClickListener() {
+        viewHolder.ProductImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mBargainClickListener != null)
-                    mBargainClickListener.onButtonClick((Integer) v.getTag(), finalConvertView);
+                Intent DescriptionIntent = new Intent(mContext, DescriptionActivity.class);
+                ProductClass cProduct = productList.get((Integer)v.getTag());
+                DescriptionIntent.putExtra("ProductDetails",cProduct);
+                mContext.startActivity(DescriptionIntent);
+
             }
         });
-
+/*
+                viewHolder.bargain.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mBargainClickListener != null)
+                            mBargainClickListener.onButtonClick((Integer) v.getTag(), finalConvertView);
+                    }
+                });
+*/
         viewHolder.ProductImage.getLayoutParams().width = screenWidth;
         viewHolder.ProductImage.getLayoutParams().height = Math.round(screenWidth / 2);
         viewHolder.ProductImage.requestLayout();
 
         viewHolder.ProductName.setText(curProduct.getName());
-        viewHolder.ProductPrice.setText("Rs. "+curProduct.getprice());
+        viewHolder.ProductPrice.setText("Rs. "+curProduct.getPrice());
+
 
         Picasso.with(mContext)
                 .setIndicatorsEnabled(false);
-        Picasso.with(mContext)
-                .load(curProduct.getImage())
-                .placeholder(R.drawable.loader)
-                .error(R.drawable.loader)
-                .into(viewHolder.ProductImage);
+/*
+// Code for storing image files locally.
+        String str = "justbakers" ;
+        File mydir =     mContext.getDir(str, Context.MODE_PRIVATE);
+        String str2 = md5(curProduct.getImage());    // getImage() should return String like  "Bakery/seller1/brownbread.png"
+        File localFile = new File(mydir, str2 + ".png");
+
+
+        if (localFile.exists()) {
+
+                Picasso.with(mContext)
+                        .load(localFile).memoryPolicy(MemoryPolicy.NO_CACHE)
+                        .placeholder(R.drawable.loader)
+                        .error(R.drawable.loader)
+                        .into(viewHolder.ProductImage);
+
+
+            } else {
+                String imgfile = curProduct.getImage();
+                saveImgToInternalStorage(imgfile, localFile);
+            }
+
+ */
+                  Picasso.with(mContext)
+                    .load(curProduct.getImage())
+                    .placeholder(R.drawable.loader)
+                    .error(R.drawable.loader)
+                    .into(viewHolder.ProductImage);
 
 
         return convertView;
@@ -175,14 +228,12 @@ public class CustomProductListAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
-        // TODO Auto-generated method stub
-        return null;
+    public ProductClass getItem(int position) {
+        return productList.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
         return position;
     }
 
@@ -200,6 +251,58 @@ public class CustomProductListAdapter extends BaseAdapter {
 
     public int getCartItemsCount() {
         return cartProductList.size();
+    }
+
+    private void saveImgToInternalStorage(String firebasePath, File localPath){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user == null) {
+            signInAnonymously();
+        }
+
+        FirebaseStorage firebaseStorage  = FirebaseStorage.getInstance();
+        StorageReference fileRef = firebaseStorage.getReference().child(firebasePath);
+
+        FileDownloadTask fileDownloadTask = fileRef.getFile(localPath);
+
+        try {
+        fileDownloadTask.addOnSuccessListener(taskSnapshot -> {
+                    Picasso.with(mContext)
+                  //          .load(curProduct.getImage())
+                            .load(localPath).memoryPolicy(MemoryPolicy.NO_CACHE)
+                            .placeholder(R.drawable.loader)
+                            .error(R.drawable.loader)
+                            .into(viewHolder.ProductImage);
+
+                }
+            // Local temp file has been created
+            );
+
+        fileDownloadTask.addOnFailureListener(e -> {
+
+        });
+      }catch (NullPointerException ignore) {
+
+      }
+
+
+    }
+
+    private void signInAnonymously() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signInAnonymously().addOnSuccessListener ( new  OnSuccessListener<AuthResult>() {
+            @Override
+            public void onSuccess(AuthResult authResult) {
+                // do your stuff
+            }
+        })
+                .addOnFailureListener( new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Log.e(TAG, "signInAnonymously:FAILURE", exception);
+                    }
+                });
     }
 }
 

@@ -48,7 +48,7 @@ public class SellerDetailsActivity extends AppCompatActivity {
 
         // SETTING THE DETAILS IN THE CONTAINERS
         SPName.setText(Product.getName());
-        SPPrice.setText(Integer.toString(Product.getprice()));
+        SPPrice.setText(Integer.toString(Product.getPrice()));
         SPDescription.setText(Product.getDescription());
         Picasso.with(this)
                 .load(Product.getImage())

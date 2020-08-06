@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    android:stretchColumns="1">
+
+    <TableRow android:background="@color/colorWhite" android:padding="5dp"
+        android:layout_marginBottom="10dp">
+        <TextView
+            android:id = "@+id/btn_custname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="24th May 2020"
+            />
+
+        <TextView
+            android:id = "@+id/btn_orderamount"
+            android:layout_marginLeft="20dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            />/>
+
+        <TextView
+            android:id = "@+id/tv_orderdetails"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:text=""
+            />
+
+        <TextView
+            android:id = "@+id/cart_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="" />
+
+    </TableRow>
+
+
+    <TableRow>
+
+        <info.hoang8f.widget.FButton
+            android:id="@+id/cartDetailTextView"
+            android:textAlignment="textStart"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:includeFontPadding="true"
+            android:lineSpacingExtra="12sp"
+            android:visibility="gone"
+            android:text="\n\n\n"
+            android:maxLines="200"
+            android:singleLine="false"
+            fbutton:fButtonColor="@color/fbutton_color_carrot"
+            fbutton:shadowColor="@color/fbutton_color_carrot"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:stretchColumns="1,2,3,4"
+            android:textColor="@color/colorWhite"
+            android:textColorHighlight="@color/colorWhite"
+            android:textColorLink="@color/fbutton_color_carrot"
+            />
+
+    </TableRow>
+
+
+    <TableRow>
+        <androidx.recyclerview.widget.RecyclerView
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:id="@+id/recycleView"/>
+    </TableRow>
+
+</TableLayout>

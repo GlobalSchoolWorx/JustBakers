@@ -4,17 +4,23 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 /**
  * Created by justbakers.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+
 public class ProductClass implements Serializable {
     private String name;
     private String image;
     private Integer price;
     private String description;
     private String seller;
+
     private String id;
+
     private String category;
     private Integer quantity;
     private Integer limit;
@@ -76,7 +82,7 @@ public class ProductClass implements Serializable {
     public String getDescription(){
         return description;
     }
-    public Integer getprice(){
+    public Integer getPrice(){
         return price;
     }
     public Integer getQuantity(){

@@ -1,11 +1,17 @@
 package com.ecom.justbakers;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.ecom.justbakers.Classes.ProductClass;
@@ -14,6 +20,8 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,16 +32,19 @@ public class AdminActivity extends AppCompatActivity {
 
     Firebase CustomerRef = new Firebase("https://justbakers-285be.firebaseio.com/customers");
     private ArrayList<String> CustomerNameList = new ArrayList<String>();
+    private ArrayList<String> CustomerDetailList = new ArrayList<String>();
     private ArrayList<List<String>> CustomerPlacedOrderList = new ArrayList<List<String>>();
     private ArrayList<String> order_arr = new ArrayList<String>();
     private CountDownLatch latch;
     private String selected_user;
+    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         CountDownLatch latch1 = new CountDownLatch(1);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+
 
         CustomerRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -67,8 +78,10 @@ public class AdminActivity extends AppCompatActivity {
 
                                 String ol = postSnapshot.getKey();
                                 String pc = (String) postSnapshot.child("status").getValue();
+                                String ordernumber = (String) postSnapshot.child("ordernumber").getValue();
+                                double finalamount = (double) postSnapshot.child("receipt").child("finalamount").getValue();
                                 if (pc.equals("pending"))
-                                  SingleCustomerPlacedOrderList.add(ol);
+                                  SingleCustomerPlacedOrderList.add(ordernumber + "\n" + "Final Amount : " + finalamount);
                             }
 
 
@@ -94,12 +107,14 @@ public class AdminActivity extends AppCompatActivity {
 
                 // Create an ArrayAdapter from List
                 final ArrayAdapter<String> arrayNameAdapter = new ArrayAdapter<String>
-                        (getApplicationContext() , android.R.layout.simple_list_item_1, CustomerNameList);
+                        (getApplicationContext() , android.R.layout.simple_list_item_1, CustomerDetailList);
                 // Create an ArrayAdapter from List
                 final ArrayAdapter<String> arrayOrderAdapter = new ArrayAdapter<String>
                         (getApplicationContext() , android.R.layout.simple_list_item_1, order_arr);
 
                 listView.setAdapter(arrayNameAdapter);
+                placedView.setAdapter(arrayOrderAdapter);
+
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int order_position, long id) {
@@ -120,7 +135,7 @@ public class AdminActivity extends AppCompatActivity {
                         }
 
 
-                        placedView.setAdapter(arrayOrderAdapter);
+             //           placedView.setAdapter(arrayOrderAdapter);
                     }
                 });
 
@@ -128,31 +143,37 @@ public class AdminActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         String order = order_arr.get(position);
-                        Firebase CustomerChangeOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/"+selected_user+"/orders/placed/"+order);
+                        String spl_order_temp[] = order.split("#");
+                        String spl_order[] = (spl_order_temp[1]).split("\n");
+                        Firebase CustomerChangeOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/"+selected_user+"/orders/placed/"+spl_order[0]);
                    //     Firebase CustomerAddToDelOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/"+selected_user+"/orders/delivered");
 
-                        CustomerChangeOrderRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                OrderClass obj = (OrderClass) dataSnapshot.getValue(OrderClass.class);
-                                if ( obj != null) {
-                                    //OrderClass oc = new OrderClass(obj, "delivered");
-                                    CustomerChangeOrderRef.child("status").setValue("delivered");
+                        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder (context);
 
-                                    //dataSnapshot.getRef().removeValue();
+                        builder.setMessage("Are you sure you want to mark this order as Delivered.").setPositiveButton (android.R.string.yes, (dialog, whichButton) -> {
+                            CustomerChangeOrderRef.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    OrderClass obj = (OrderClass) dataSnapshot.getValue(OrderClass.class);
+                                    if (obj != null) {
+                                        //OrderClass oc = new OrderClass(obj, "delivered");
+                                        CustomerChangeOrderRef.child("status").setValue("delivered");
+
+                                        //dataSnapshot.getRef().removeValue();
+                                    }
+
                                 }
 
-                            }
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
 
-                            @Override
-                            public void onCancelled(FirebaseError firebaseError) {
-
-                            }
-                        });
+                                }
+                            });
 
 
+                        }).setNegativeButton(android.R.string.no, (dialog, whichButton) -> {});
 
-
+                        builder.show();
                     }
                 });
 
@@ -173,5 +194,22 @@ public class AdminActivity extends AppCompatActivity {
         }
 
  */
+
+        /** CODE FOR SIGN OUT IN NAVIGATION HEADER **/
+        Button signOut = (Button) findViewById(R.id.signOutButton);
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoginActivity.getGoogleSignInClient().signOut()
+                        .addOnCompleteListener((Activity) getApplicationContext(), new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                // ...
+                            }
+                        });
+                Intent signoutintent = new Intent(AdminActivity.this, LoginActivity.class);
+                AdminActivity.this.startActivity(signoutintent);
+            }
+        });
     }
 }

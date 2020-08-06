@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.PendingIntent;
@@ -18,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecom.justbakers.CartActivity;
@@ -65,9 +67,10 @@ public class TempCheckoutActivity extends AppCompatActivity {
         info.hoang8f.widget.FButton placeOrderButton = findViewById(R.id.placeOrderButton);
         info.hoang8f.widget.FButton updateAddressButton = findViewById(R.id.updateAddressButton);
         final AutoCompleteTextView tvContact = findViewById(R.id.contact);
+        final TextView tvCode = findViewById(R.id.tvCountryCode);
         final AutoCompleteTextView tvName = findViewById(R.id.name);
         final Spinner sArea = findViewById(R.id.area_list);
-        final ListView tvSociety = findViewById(R.id.society_list);
+        final Spinner tvSociety = findViewById(R.id.society_list);
         final AutoCompleteTextView tvFlatNumber = findViewById(R.id.flatNumber);
 
         final Firebase areaRef = new Firebase("https://justbakers-285be.firebaseio.com/deliveryAddress");
@@ -88,11 +91,13 @@ public class TempCheckoutActivity extends AppCompatActivity {
         if(!newLogin) {
             tvName.setVisibility(View.GONE);
             tvContact.setVisibility(View.GONE);
+            tvCode.setVisibility(View.GONE);
             placeOrderButton.setVisibility(View.GONE);
             updateAddressButton.setVisibility(View.VISIBLE);
         } else {
             tvName.setVisibility(View.VISIBLE);
             tvContact.setVisibility(View.VISIBLE);
+            tvCode.setVisibility(View.VISIBLE);
             placeOrderButton.setVisibility(View.VISIBLE);
             updateAddressButton.setVisibility(View.GONE);
         }
@@ -121,7 +126,7 @@ public class TempCheckoutActivity extends AppCompatActivity {
 
             }
         });
-        final ListView societyListView = findViewById(R.id.society_list);
+        final Spinner societyListView = findViewById(R.id.society_list);
         //ListAdapter adapter = new ListAdapter(this, dataItems);
         //adapter.setCustomButtonListner(this);
         //listView.setAdapter(adapter);
@@ -141,10 +146,15 @@ public class TempCheckoutActivity extends AppCompatActivity {
         });
 
 
-        societyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        societyListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedSocietyIndex = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -153,11 +163,10 @@ public class TempCheckoutActivity extends AppCompatActivity {
         placeOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                phoneNo = tvContact.getText().toString();
-                flatNumber = tvFlatNumber.getText().toString();
+
                 name = tvName.getText().toString();
-                area = areaListView.getSelectedItem().toString();
-                society = societyListView.getItemAtPosition(selectedSocietyIndex).toString();
+                flatNumber = tvFlatNumber.getText().toString();
+                phoneNo = tvContact.getText().toString();
 
                 if(name.length() < 3 ) {
                     Toast.makeText(getApplicationContext(), "Please enter a valid Name.",
@@ -174,9 +183,17 @@ public class TempCheckoutActivity extends AppCompatActivity {
                 {
                     Toast.makeText(getApplicationContext(), "Please select your society or a society that is in your neighbourhood.",
                             Toast.LENGTH_LONG).show();
+                } else if (areaListView.getSelectedItem() == null) {
+                    Toast.makeText(getApplicationContext(), "Please select your Area.",
+                            Toast.LENGTH_LONG).show();
                 } else {
                     Intent intent = new Intent(getApplicationContext(), PhoneAuthActivity.class);
                     Integer tc = new Integer(verification_code);
+
+
+                    area = areaListView.getSelectedItem().toString();
+                    society = societyListView.getItemAtPosition(selectedSocietyIndex).toString();
+
                     intent.putExtra("CONTACT", phoneNo);
                     intent.putExtra("AREA", area);
                     intent.putExtra("SOCIETY", society);
@@ -245,7 +262,7 @@ public class TempCheckoutActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList <String> societyList = new ArrayList<String>();
-                ListView societyListView = findViewById(R.id.society_list);
+                Spinner societyListView = findViewById(R.id.society_list);
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
                  String str = (String)postSnapshot.getValue();

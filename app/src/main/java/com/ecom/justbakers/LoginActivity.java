@@ -6,14 +6,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
-import  com.ecom.justbakers.sms_verify.PhoneAuthActivity;
 import com.ecom.justbakers.gpay.TempCheckoutActivity;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -28,23 +27,27 @@ import com.google.android.gms.tasks.Task;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
+import static com.ecom.justbakers.sms_verify.AppSignatureHelper.TAG;
+import static com.ecom.justbakers.sms_verify.PhoneAuthActivity.md5;
 
 public class LoginActivity extends AppCompatActivity {
     // UI references.
     String account_name;
-    String admin;
-    private boolean existing_user = false;
+    static String admin;
     final int MY_PERMISSIONS_REQUEST_GET_ACCOUNTS = 0;
-    GoogleSignInClient mGoogleSignInClient;
+    static GoogleSignInClient mGoogleSignInClient;
     int RC_SIGN_IN = 0;
+
     GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail().build();
-    Firebase cartRef = new Firebase ("https://justbakers-285be.firebaseio.com/customers/");
-    Firebase adminRef = new Firebase ("https://justbakers-285be.firebaseio.com/admin/");
-    ValueEventListener vel, admin_vel;
 
+    private Firebase cartRef = new Firebase ("https://justbakers-285be.firebaseio.com/customers/");
+    private Firebase adminRef = new Firebase ("https://justbakers-285be.firebaseio.com/admin/");
+    private ValueEventListener vel, admin_vel;
 
 
     @Override
@@ -54,18 +57,22 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.blackback));
-        getSupportActionBar().setTitle(getResources().getString(R.string.welcome_app_name));
+        ActionBar actionBar = getSupportActionBar();
+        if(null != actionBar) {
+            actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.blackback));
+            actionBar.setTitle(getResources().getString(R.string.welcome_app_name));
+        }
 
+        Log.i(TAG, "onCreate:" + "LoginActivity");
         setContentView(R.layout.activity_login);
         getAdmin();
         getSignIn();
 
 
-        /**SHIMMERING TEXT VIEW ANIMATIONS**/
-        ShimmerTextView tagline = (ShimmerTextView) findViewById(R.id.Tagline);
-        ShimmerTextView tagline2 = (ShimmerTextView) findViewById(R.id.Tagline2);
-        ShimmerTextView tagline3 = (ShimmerTextView) findViewById(R.id.Tagline3);
+        /*SHIMMERING TEXT VIEW ANIMATIONS*/
+        ShimmerTextView tagline = findViewById(R.id.Tagline);
+        ShimmerTextView tagline2 = findViewById(R.id.Tagline2);
+        ShimmerTextView tagline3 = findViewById(R.id.Tagline3);
         Shimmer shimmer = new Shimmer();
         Shimmer shimmer1 = new Shimmer();
         Shimmer shimmer2 = new Shimmer();
@@ -87,39 +94,21 @@ public class LoginActivity extends AppCompatActivity {
 
        // mUserView = (AutoCompleteTextView) findViewById(R.id.loginusername);
 
-        /** FACEBOOK BUTTON **/
-        ImageButton facebook =(ImageButton) findViewById(R.id.fb);
-        facebook.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToUrl(getResources().getString(R.string.facebook));
-            }
+        /* FACEBOOK BUTTON **/
+        ImageButton facebook = findViewById(R.id.fb);
+        facebook.setOnClickListener(v -> goToUrl(getResources().getString(R.string.facebook)));
+        /* EMAIL BUTTON **/
+        ImageButton googleMail = findViewById(R.id.gmail);
+        googleMail.setOnClickListener(v -> {
+            Intent intent = new Intent (Intent.ACTION_VIEW , Uri.parse("mailto:" +getResources().getString(R.string.googlemail) ));
+            startActivity(intent);
         });
-        /** EMAIL BUTTON **/
-        ImageButton googleMail =(ImageButton) findViewById(R.id.gmail);
-        googleMail.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent (Intent.ACTION_VIEW , Uri.parse("mailto:" +getResources().getString(R.string.googlemail) ));
-                startActivity(intent);
-            }
-        });
-        /** LINKEDIN BUTTON **/
-        ImageButton Linkedin =(ImageButton) findViewById(R.id.linkedin);
-        Linkedin.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToUrl(getResources().getString(R.string.linkedin));
-            }
-        });
-        /** GITHUB BUTTON **/
-        ImageButton Github =(ImageButton) findViewById(R.id.github);
-        Github.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToUrl(getResources().getString(R.string.github));
-            }
-        });
+        /* LINKEDIN BUTTON **/
+        ImageButton Linkedin = findViewById(R.id.linkedin);
+        Linkedin.setOnClickListener(v -> goToUrl(getResources().getString(R.string.linkedin)));
+        /* GITHUB BUTTON **/
+        ImageButton Github = findViewById(R.id.github);
+        Github.setOnClickListener(v -> goToUrl(getResources().getString(R.string.github)));
 
         facebook.setVisibility(View.GONE);
         googleMail.setVisibility(View.GONE);
@@ -142,6 +131,9 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    static String getAdminUser () {
+        return admin;
+    }
     private void getAdmin() {
 
         admin_vel = new ValueEventListener() {
@@ -169,17 +161,22 @@ public class LoginActivity extends AppCompatActivity {
     private void getSignIn() {
         // GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
+        Log.i(TAG, "getSignIn:" + "LoginActivity");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    public static GoogleSignInClient getGoogleSignInClient () {
+        return mGoogleSignInClient;
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.i(TAG, "Not yet starting  handleSignInResult " + "LoginActivity");
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
+            Log.i(TAG, "Starting handleSignInResult " + "LoginActivity");
             // The Task returned from this call is always completed, no need to attach
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -190,34 +187,39 @@ public class LoginActivity extends AppCompatActivity {
 
     public void checkIfExistingCustomer(final String gmail) {
 
-
-
-
+        Log.i(TAG, "checkIfExistingCustomer " + "LoginActivity");
         vel = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String userId[] = gmail.split("@");
+                Log.i(TAG, "checkIfExistingCustomer ValueEventListener onDataChange" + "LoginActivity");
+                String [] userId = gmail.split("@");
                 boolean mCustomerFound = false;
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     String dval = postSnapshot.getKey();
+
                     if (dval.equals(userId[0])) {
                         mCustomerFound = true;
+                        Log.i(TAG, "Customer Found" + "LoginActivity");
                         break;
                     }
                 }
 
                 if (!mCustomerFound) { // Ask for Registration Details
-
+                    Log.i(TAG, "Customer Not Found" + "LoginActivity");
                     Intent userintent = new Intent(getApplicationContext(), TempCheckoutActivity.class);
                     userintent.putExtra("CONTEXT", "NEW");
                     startActivity(userintent);
                 } else {
-                    String user = LoginActivity.getDefaults("UserID", getApplicationContext());
+                    String user = LoginActivity.getDefaults("Gmail", getApplicationContext());
+                    /*
                     if (user.equals(admin)) {
+                        Log.i(TAG, "Admin" + "LoginActivity");
                         Intent userintent = new Intent(getApplicationContext(), AdminActivity.class);
                         //Intent userintent = new Intent(LoginActivity.this, PhoneAuthActivity.class);
                         LoginActivity.this.startActivity(userintent);
-                    } else {
+                    } else */
+                    {
+                        Log.i(TAG, "Starting UserActivity" + "LoginActivity");
                         Intent userintent = new Intent(LoginActivity.this, UserActivity.class);
                         //Intent userintent = new Intent(LoginActivity.this, PhoneAuthActivity.class);
                         LoginActivity.this.startActivity(userintent);
@@ -237,18 +239,24 @@ public class LoginActivity extends AppCompatActivity {
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
+            Log.i(TAG, "handleSignInResult " + "LoginActivity");
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            System.out.println();
+            Log.i(TAG, "handleSignInResult " + "Getting Account Details");
             account_name = account.getEmail();
-            String splUserId[] = account_name.split("@");
-            setDefaults("UserID", splUserId[0], this);
+            Log.i(TAG, "handleSignInResult " + account_name);
+            String [] splUserId = account_name.split("@");
+            String userId = md5 (splUserId[0]);
+            Log.i(TAG, "handleSignInResult User Id " + splUserId[0]);
 
-            ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
+            setDefaults("UserID", userId , this);
+            setDefaults("Gmail", splUserId[0], this);
+            Log.i(TAG, "handleSignInResult" + "LoginActivity");
+            ProgressBar mProgressBar = findViewById(R.id.progressbar);
             mProgressBar.setVisibility(View.GONE);
-            checkIfExistingCustomer (splUserId[0]);
-
-
+            checkIfExistingCustomer (userId);
         } catch (ApiException e) {
+
+            Log.i(TAG, "handleSignInResult Exception" + "LoginActivity");
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             //Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
@@ -273,9 +281,19 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        Log.i(TAG, "onStop :" + "LoginActivity");
+        try {
+            if (null != cartRef && null != vel) {
+                cartRef.removeEventListener(vel);
+            }
 
-        cartRef.removeEventListener(vel);
-        adminRef.removeEventListener(admin_vel);
+            if (null != adminRef && null != admin_vel) {
+                adminRef.removeEventListener(admin_vel);
+            }
+        }catch (Throwable ignore) {
+
+            Log.i(TAG, "onStop Exception " + "LoginActivity");
+        }
     }
 }
 

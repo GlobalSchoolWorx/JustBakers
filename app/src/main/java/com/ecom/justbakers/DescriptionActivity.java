@@ -1,26 +1,15 @@
 package com.ecom.justbakers;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ecom.justbakers.Classes.BargainProductClass;
 import com.ecom.justbakers.Classes.ProductClass;
-import com.firebase.client.Firebase;
-import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class DescriptionActivity extends AppCompatActivity {
@@ -49,15 +38,18 @@ public class DescriptionActivity extends AppCompatActivity {
         */
         // SETTING THE DETAILS IN THE VIEWS
         Picasso.with(DescriptionActivity.this).setIndicatorsEnabled(true);  //only for debug tests
-        Picasso.with(DescriptionActivity.this)
-                .load(ProductDetails.getImage())
-                .placeholder(R.drawable.loader)
-                .error(R.drawable.loader)
-                .into(PImage);
-        PName.setText(ProductDetails.getName());
-        PPrice.setText("Rs. "+ProductDetails.getprice());
-        PDescription.setText(ProductDetails.getDescription());
-        PSeller.setText("SOLD BY: "+ProductDetails.getSeller());
+
+        if ( ProductDetails != null ) {
+            Picasso.with(DescriptionActivity.this)
+                    .load(ProductDetails.getImage())
+                    .placeholder(R.drawable.loader)
+                    .error(R.drawable.loader)
+                    .into(PImage);
+            PName.setText(ProductDetails.getName());
+            PPrice.setText("Rs. " + ProductDetails.getPrice());
+            PDescription.setText(ProductDetails.getDescription());
+            PSeller.setText("SOLD BY: " + ProductDetails.getSeller());
+        }
         /*
         // Setting Click Listener on Start Chat Button
         final Button ChatButton = (Button) findViewById(R.id.StartChatButton);
