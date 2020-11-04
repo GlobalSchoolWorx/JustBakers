@@ -59,7 +59,6 @@ public class TempCheckoutActivity extends AppCompatActivity {
     String pincode;
     String flatNumber;
     int verification_code;
-    private int selectedSocietyIndex = -1;
     private boolean newLogin = false;
 
     @Override
@@ -82,14 +81,15 @@ public class TempCheckoutActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 InfoClass ic = (InfoClass) dataSnapshot.getValue(InfoClass.class);
+                if ( ic != null ) {
+                    society = ic.getSociety();
+                    flatNumber = ic.getFlatNumber();
+                    pincode = ic.getPincode();
 
-                society = ic.getSociety();
-                flatNumber = ic.getFlatNumber();
-                pincode = ic.getPincode();
-
-                tvFlatNumber.setText(flatNumber);
-                tvSociety.setText(society);
-                tvPincode.setText(pincode);
+                    tvFlatNumber.setText(flatNumber);
+                    tvSociety.setText(society);
+                    tvPincode.setText(pincode);
+                }
 
             }
 
@@ -208,9 +208,9 @@ public class TempCheckoutActivity extends AppCompatActivity {
                 {
                     Toast.makeText(getApplicationContext(), "Please enter a valid 10 digit phone number.",
                             Toast.LENGTH_LONG).show();
-                } else if(selectedSocietyIndex < 0)
+                } else if(!validatePincodeNumber(pincode))
                 {
-                    Toast.makeText(getApplicationContext(), "Please select your society or a society that is in your neighbourhood.",
+                    Toast.makeText(getApplicationContext(), "Please enter a valid 6 digit pincode number.",
                             Toast.LENGTH_LONG).show();
                 } else {
                     Intent intent = new Intent(getApplicationContext(), PhoneAuthActivity.class);
@@ -268,6 +268,15 @@ public class TempCheckoutActivity extends AppCompatActivity {
         return valid;
     }
 
+    boolean validatePincodeNumber (String pincodeNo) {
+        String PinPattern = "[0-9]{6}";
+        boolean valid = false;
+
+        if ( !pincodeNo.isEmpty() && pincodeNo.matches(PinPattern) )
+            valid  = true;
+
+        return valid;
+    }
 /*
     public void onAreaListButtonClickListener(String area) {
         Firebase societyRef = new Firebase("https://justbakers-285be.firebaseio.com/deliveryAddress").child(area);
