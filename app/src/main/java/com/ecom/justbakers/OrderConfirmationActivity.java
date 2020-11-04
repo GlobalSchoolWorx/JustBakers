@@ -70,7 +70,7 @@ public class OrderConfirmationActivity extends AppCompatActivity {
 
     protected void sendEmail() {
         Log.i("Send email", "");
-        String[] TO = {"ikbirkaur13@gmail.com"};
+        String[] TO = {"bakersjust@gmail.com"};
         String[] CC = {""};
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
 
@@ -105,7 +105,7 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         if ( CartActivity.getReceipt() != null && CartActivity.getCurrentCartList() != null ) {
 
             InfoClass info = new InfoClass(LoginActivity.getDefaults("Gmail", this),  LoginActivity.getDefaults("Name", this),
-                    LoginActivity.getDefaults("Phone", this), LoginActivity.getDefaults("Area", this),
+                    LoginActivity.getDefaults("Phone", this), LoginActivity.getDefaults("Pincode", this),
                     LoginActivity.getDefaults("Society", this), LoginActivity.getDefaults("Flat", this));
 
             OrderClass order = new OrderClass(scode, CartActivity.getCurrentCartList(), CartActivity.getReceipt(), date, date.getTime(), "pending");
@@ -125,5 +125,12 @@ public class OrderConfirmationActivity extends AppCompatActivity {
         else {
             Log.i("saveOrderInDatabase", "ERROR : Receipt is NULL");
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), UserActivity.class);
+
+        startActivity(intent);
     }
 }

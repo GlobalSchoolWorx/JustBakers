@@ -48,7 +48,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
     private String mPhoneNumber;
     private String mName;
     private String mSociety;
-    private String mArea;
+    private String mPincode;
     private String mFlatNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
 
         mPhoneNumber = "+91" + getIntent().getStringExtra("CONTACT");
         mName = getIntent().getStringExtra("NAME");
-        mArea = getIntent().getStringExtra("AREA");
+        mPincode = getIntent().getStringExtra("PINCODE");
         mSociety = getIntent().getStringExtra("SOCIETY");
         mFlatNumber = getIntent().getStringExtra("FLAT_NUMBER");
 
@@ -86,12 +86,12 @@ public class PhoneAuthActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             //verification successful we will start the profile activity
                             storeDetailsInDatabase(LoginActivity.getDefaults("UserID", getApplicationContext()), LoginActivity.getDefaults("Gmail", getApplicationContext()),
-                                                                              mName, mPhoneNumber , mArea, mSociety, mFlatNumber );
+                                                                              mName, mPhoneNumber , mFlatNumber, mSociety, mPincode );
                             LoginActivity.setDefaults("Name", mName, getApplicationContext());
                             LoginActivity.setDefaults("Phone", mPhoneNumber, getApplicationContext());
                             LoginActivity.setDefaults("Society", mSociety, getApplicationContext());
                             LoginActivity.setDefaults("Flat", mFlatNumber, getApplicationContext());
-                            LoginActivity.setDefaults("Area", mArea, getApplicationContext());
+                            LoginActivity.setDefaults("Pincode", mPincode, getApplicationContext());
                             Intent intent = new Intent(PhoneAuthActivity.this, UserActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
@@ -210,7 +210,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
         return "";
     }
 
-    public static void storeAddressDetailsInDatabase (String gmail, String area, String society, String flatNumber) {
+    public static void storeAddressDetailsInDatabase (String gmail, String flatNumber, String society, String pincode) {
 
         String userid = md5 (gmail);
         Firebase custRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userid + "/info");
@@ -218,9 +218,19 @@ public class PhoneAuthActivity extends AppCompatActivity {
         //custRef.child("info").push().setValue(infoObject);
         custRef.child("flatNumber").setValue(flatNumber);
         custRef.child("society").setValue(society);
-        custRef.child("area").setValue(area);
+        custRef.child("pincode").setValue(pincode);
 
     }
 
+    public static void updateAddressDetailsInDatabase (String userid, String flatNumber, String society, String pincode) {
+
+        Firebase custRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userid + "/info");
+
+        //custRef.child("info").push().setValue(infoObject);
+        custRef.child("flatNumber").setValue(flatNumber);
+        custRef.child("society").setValue(society);
+        custRef.child("pincode").setValue(pincode);
+
+    }
 
    }

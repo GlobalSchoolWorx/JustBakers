@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import com.ecom.justbakers.CartActivity;
 import com.ecom.justbakers.LoginActivity;
 import com.ecom.justbakers.R;
+import com.ecom.justbakers.orders.InfoClass;
 import com.ecom.justbakers.sms_verify.AppSignatureHelper;
 import com.ecom.justbakers.sms_verify.PhoneAuthActivity;
 import com.ecom.justbakers.sms_verify.VerifyOtpActivity;
@@ -54,7 +56,7 @@ public class TempCheckoutActivity extends AppCompatActivity {
     String phoneNo;
     String name;
     String society;
-    String area;
+    String pincode;
     String flatNumber;
     int verification_code;
     private int selectedSocietyIndex = -1;
@@ -69,13 +71,35 @@ public class TempCheckoutActivity extends AppCompatActivity {
         final AutoCompleteTextView tvContact = findViewById(R.id.contact);
         final TextView tvCode = findViewById(R.id.tvCountryCode);
         final AutoCompleteTextView tvName = findViewById(R.id.name);
-        final Spinner sArea = findViewById(R.id.area_list);
-        final Spinner tvSociety = findViewById(R.id.society_list);
-        final AutoCompleteTextView tvFlatNumber = findViewById(R.id.flatNumber);
+        final AutoCompleteTextView tvFlatNumber = findViewById(R.id.flat_number);
+        final AutoCompleteTextView tvSociety = findViewById(R.id.society);
+        final AutoCompleteTextView tvPincode = findViewById(R.id.pincode);
+        String userId = LoginActivity.getDefaults("UserID", this);
+        final Firebase addressRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userId + "/info");
 
-        final Firebase areaRef = new Firebase("https://justbakers-285be.firebaseio.com/deliveryAddress");
-        final Spinner areaListView = findViewById(R.id.area_list);
+        ValueEventListener addr_vel = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
+                InfoClass ic = (InfoClass) dataSnapshot.getValue(InfoClass.class);
+
+                society = ic.getSociety();
+                flatNumber = ic.getFlatNumber();
+                pincode = ic.getPincode();
+
+                tvFlatNumber.setText(flatNumber);
+                tvSociety.setText(society);
+                tvPincode.setText(pincode);
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        };
+
+        addressRef.addValueEventListener(addr_vel);
         Intent intent = getIntent();
 
         String srcContext = intent.getStringExtra("CONTEXT");
@@ -101,8 +125,8 @@ public class TempCheckoutActivity extends AppCompatActivity {
             placeOrderButton.setVisibility(View.VISIBLE);
             updateAddressButton.setVisibility(View.GONE);
         }
-
-        /** GETTING THE ADDRESS DATA - AREA  INTO  LIST **/
+        /*
+        /** GETTING THE ADDRESS DATA - AREA  INTO  LIST
         areaRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -117,7 +141,7 @@ public class TempCheckoutActivity extends AppCompatActivity {
 
                 // Here, you set the data in your ListView
 
-                areaListView.setAdapter(adapter);
+                //areaListView.setAdapter(adapter);
             }
 
 
@@ -126,10 +150,13 @@ public class TempCheckoutActivity extends AppCompatActivity {
 
             }
         });
-        final Spinner societyListView = findViewById(R.id.society_list);
+
+        */
+        //final Spinner societyListView = findViewById(R.id.society_list);
         //ListAdapter adapter = new ListAdapter(this, dataItems);
         //adapter.setCustomButtonListner(this);
         //listView.setAdapter(adapter);
+        /*
         areaListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -158,7 +185,7 @@ public class TempCheckoutActivity extends AppCompatActivity {
             }
         });
 
-
+        */
 
         placeOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,6 +193,8 @@ public class TempCheckoutActivity extends AppCompatActivity {
 
                 name = tvName.getText().toString();
                 flatNumber = tvFlatNumber.getText().toString();
+                society = tvSociety.getText().toString();
+                pincode = tvPincode.getText().toString();
                 phoneNo = tvContact.getText().toString();
 
                 if(name.length() < 3 ) {
@@ -183,23 +212,16 @@ public class TempCheckoutActivity extends AppCompatActivity {
                 {
                     Toast.makeText(getApplicationContext(), "Please select your society or a society that is in your neighbourhood.",
                             Toast.LENGTH_LONG).show();
-                } else if (areaListView.getSelectedItem() == null) {
-                    Toast.makeText(getApplicationContext(), "Please select your Area.",
-                            Toast.LENGTH_LONG).show();
                 } else {
                     Intent intent = new Intent(getApplicationContext(), PhoneAuthActivity.class);
                     Integer tc = new Integer(verification_code);
 
 
-                    area = areaListView.getSelectedItem().toString();
-                    society = societyListView.getItemAtPosition(selectedSocietyIndex).toString();
-
                     intent.putExtra("CONTACT", phoneNo);
-                    intent.putExtra("AREA", area);
-                    intent.putExtra("SOCIETY", society);
                     intent.putExtra("FLAT_NUMBER", flatNumber);
+                    intent.putExtra("SOCIETY", society);
+                    intent.putExtra("PINCODE", pincode);
                     intent.putExtra("NAME", name);
-                    //intent.putExtra("VERIFICATION_CODE", tc.toString());
                     startActivity(intent);
                 }
             }
@@ -210,31 +232,25 @@ public class TempCheckoutActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 flatNumber = tvFlatNumber.getText().toString();
-                area = areaListView.getSelectedItem().toString();
+                society = tvSociety.getText().toString();
+                pincode = tvPincode.getText().toString();
 
                 if (flatNumber == null || flatNumber.length() < 3) {
                     Toast.makeText(getApplicationContext(), "Please enter a valid Flat Number.",
                             Toast.LENGTH_LONG).show();
-                } else if(selectedSocietyIndex < 0)
-                {
-                    Toast.makeText(getApplicationContext(), "Please select your society or a society that is in your neighbourhood.",
-                            Toast.LENGTH_LONG).show();
                 } else if (!newLogin) {
-                    society = societyListView.getItemAtPosition(selectedSocietyIndex).toString();
-                    PhoneAuthActivity.storeAddressDetailsInDatabase(LoginActivity.getDefaults("UserID", getApplicationContext()), area, society, flatNumber);
+                    PhoneAuthActivity.updateAddressDetailsInDatabase(LoginActivity.getDefaults("UserID", getApplicationContext()), flatNumber, society, pincode);
                     Intent intent = new Intent(getApplicationContext(), CartActivity.class);
                     startActivity(intent);
                 }
                 else {
-                        society = societyListView.getItemAtPosition(selectedSocietyIndex).toString();
                         Intent intent = new Intent(getApplicationContext(), PhoneAuthActivity.class);
                         Integer tc = new Integer(verification_code);
                         intent.putExtra("CONTACT", phoneNo);
-                        intent.putExtra("AREA", area);
-                        intent.putExtra("SOCIETY", society);
                         intent.putExtra("FLAT_NUMBER", flatNumber);
+                        intent.putExtra("SOCIETY", society);
+                        intent.putExtra("PINCODE", pincode);
                         intent.putExtra("NAME", name);
-                        //intent.putExtra("VERIFICATION_CODE", tc.toString());
                         startActivity(intent);
                     }
                 }
@@ -252,12 +268,12 @@ public class TempCheckoutActivity extends AppCompatActivity {
         return valid;
     }
 
-
+/*
     public void onAreaListButtonClickListener(String area) {
         Firebase societyRef = new Firebase("https://justbakers-285be.firebaseio.com/deliveryAddress").child(area);
 
  //      Firebase ref = societyRef.child(area);
-        /** GETTING THE ADDRESS DATA - SOCIETY  INTO  LIST **/
+        /** GETTING THE ADDRESS DATA - SOCIETY  INTO  LIST
         societyRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -282,7 +298,7 @@ public class TempCheckoutActivity extends AppCompatActivity {
         });
     };
 
-
+*/
     @Override
     public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
         switch (requestCode) {

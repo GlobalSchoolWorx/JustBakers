@@ -4,11 +4,15 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,20 +34,35 @@ import com.ecom.justbakers.Classes.ProductClass;
 import com.ecom.justbakers.MenuItemListeners.MenuCartItemListener;
 import com.ecom.justbakers.orders.InfoClass;
 import com.ecom.justbakers.orders.OrderClass;
+import com.ecom.justbakers.room.ProductDatabase;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.MutableData;
 import com.firebase.client.Transaction;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,41 +73,43 @@ import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 public class UserActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "UserActivity";
     private ProgressDialog progress;
-    //private static int cartIndex = 0;
     private int bargainCartIndex = 0;
-    ListView productList;
-    ProgressBar progressBar;
+    private ListView productList;
     private static OrderClass curOrder;
     private String userId = null;
-    CustomProductListAdapter productAdapter;
-    CustomOrderListAdapter orderAdapter;
-    CustomerPendingOrderListAdapter customerPendingOrderAdapter;
-    TextView cartcounterTV;
-    TextView bargaincounterTV;
+    private CustomProductListAdapter productAdapter;
+    private CustomOrderListAdapter orderAdapter;
+    private CustomerPendingOrderListAdapter customerPendingOrderAdapter;
+    private TextView cartcounterTV;
+    private TextView bargaincounterTV;
     private boolean adminLogin = false;
-    /*private boolean pendingOrderFlag = true;
-    private  boolean placedOrderFlag = false;
-    private  boolean deliveredOrderFlag = false;*/
+    private double databaseVer;
+    private  int cartProductCount;
+    private long customerCount;
+    private  int lastSeenItem = 0;
 
-    ValueEventListener cartValueEventListener;
-    ValueEventListener prodValueEventListener;
-    ValueEventListener placedValueEventListener;
-    ValueEventListener custValueEventListener;
+    private ValueEventListener cartValueEventListener;
+    private ValueEventListener prodValueEventListener;
+    private ValueEventListener placedValueEventListener;
+    private ValueEventListener custValueEventListener;
 
     /* MAKING A REFERENCE TO PRODUCT DISPLAY FIREBASE */
-    Firebase productRef = new Firebase("https://justbakers-285be.firebaseio.com/productDisplay");
+    private Firebase productRef = new Firebase("https://justbakers-285be.firebaseio.com/productDisplay");
     /** MAKING A REFERENCE TO CART URL IN FIREBASE FOR THE VALUES TO BE PUSHED **/
-    Firebase cartRef = new Firebase("https://justbakers-285be.firebaseio.com/")  // https://justbakers-285be.firebaseio.com/
+    private Firebase cartRef = new Firebase("https://justbakers-285be.firebaseio.com/")  // https://justbakers-285be.firebaseio.com/
             .child("customers");
     /* MAKING A REFERENCE TO BARGAIN REQUESTS CART */
     //  Firebase bargaincartRef = new Firebase("https://justbakers-285be.firebaseio.com/")
     //         .child("BargainCarts");
     /** MAKING A REFERENCE TO ORDERS LIST FIREBASE **/
-    Firebase placedOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers");
-    Firebase deliveredOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers");
-    Firebase custRef =null;
+    private Firebase custCountRef = new Firebase("https://justbakers-285be.firebaseio.com/customers");
+    private Firebase placedOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers");
+    private Firebase deliveredOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers");
+    private Firebase custRef =null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,42 +119,52 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        lastSeenItem = getIntent().getIntExtra("SelectedProductPosition", 0);
+        productRef = new Firebase("https://justbakers-285be.firebaseio.com/productDisplayVer16");
         productList = findViewById(R.id.ProductList);
-
         userId = LoginActivity.getDefaults("UserID",this);
         String gmail = LoginActivity.getDefaults("Gmail",this);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         /* CHECK IF IN ANY CASE USERNAME STRING IS NULL OR EMPTY GO BACK TO LOGIN ACTIVITY */
-        if(userId ==null || LoginActivity.getDefaults("UserID",this).equals(""))
-        {
+        if("".equals(userId)) {
             Intent intent = new Intent(this,LoginActivity.class);
             this.startActivity(intent);
-        }
-        else {
-
+        } else {
             if (gmail.equals(LoginActivity.getAdminUser())) {
                 adminLogin = true;
                 custRef = new Firebase("https://justbakers-285be.firebaseio.com/pendingOrders");
 
                 MenuItem customerMenuItem = navigationView.getMenu().findItem(R.id.nav_adminview);
                 customerMenuItem.setVisible(true);
-              //  customerView.setVisibility(View.VISIBLE);
+                //  customerView.setVisibility(View.VISIBLE);
             }
 
-            cartRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/"+userId+"/orders/pending")  // https://justbakers-285be.firebaseio.com/
-                    .child("cart");
+            // https://justbakers-285be.firebaseio.com/
+            custCountRef = new Firebase("https://justbakers-285be.firebaseio.com/customers");
+            custCountRef.addValueEventListener(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    customerCount = dataSnapshot.getChildrenCount();
+
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
+
+
+            cartRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/"+userId+"/orders/pending").child("cart");
             placedOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/"+userId+"/orders/placed");
 
             deliveredOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/"+userId+"/orders/").child("delivered");
-
-
         }
 
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -145,10 +176,9 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
 
 
         /* SETTING THE TEXTS IN NAVIGATION HEADER */
-        TextView Email = header.findViewById(R.id.Email);
-        Email.setText(LoginActivity.getDefaults("Gmail",this)+"@gmail.com");
-        TextView Name = header.findViewById(R.id.Name);
-        Name.setText(LoginActivity.getDefaults("Gmail",this));
+        TextView email = header.findViewById(R.id.Email);
+        email.setText(gmail+"@gmail.com");
+        ((TextView)header.findViewById(R.id.Name)).setText(LoginActivity.getDefaults("Name",this));
 
         /* RANDOM TIPS GENERATION**/
 //        TextView UserTips = (TextView) findViewById(R.id.UserTips);
@@ -163,30 +193,23 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
         /* CODE FOR SIGN OUT IN NAVIGATION HEADER */
         Button SignOut = header.findViewById(R.id.signout);
         SignOut.setOnClickListener(v -> {
-            LoginActivity.getGoogleSignInClient().signOut()
-                    .addOnCompleteListener((Activity) getApplicationContext(), task -> {
-                        // ...
-                    });
-            Intent signoutintent = new Intent(UserActivity.this, LoginActivity.class);
-            UserActivity.this.startActivity(signoutintent);
+            if (LoginActivity.getGoogleSignInClient() != null) {
+                LoginActivity.getGoogleSignInClient().signOut()
+                        .addOnCompleteListener((Activity) getApplicationContext(), task -> {
+                            // ...
+                        });
+                Intent signoutintent = new Intent(UserActivity.this, LoginActivity.class);
+                UserActivity.this.startActivity(signoutintent);
+            }
         });
         navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     protected void onStart() {
+
         super.onStart();
 
-        /* INITIALISATION */
-        ArrayList<ProductClass> productClassList = new ArrayList<>();
-        ArrayList<InfoClass> customersInfoList = new ArrayList<>();
-        ArrayList<ProductClass> cartProductClassList = new ArrayList<>();
-        ArrayList<OrderClass> placedOrdersClassList = new ArrayList<>();
-        ArrayList<OrderClass> customersOrderList = new ArrayList<>();
-
-        //      FirebaseBargainCartCount(bargaincartRef);
-
-        /* CREATING AND STARTING THE PROGRESS BAR */
         progress = new ProgressDialog(this);
         progress.setMessage(getResources().getString(R.string.Loading1));
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -194,12 +217,22 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
         progress.setCancelable(false);
         progress.show();
 
+        ProductDatabase pd = ProductDatabase.getInstance(getApplicationContext());
+
+
+        ArrayList<ProductClass> productClassList = new ArrayList<>();
+        ArrayList<InfoClass> customersInfoList = new ArrayList<>();
+        ArrayList<ProductClass> cartProductClassList = new ArrayList<>();
+        ArrayList<OrderClass> placedOrdersClassList = new ArrayList<>();
+        ArrayList<OrderClass> customersOrderList = new ArrayList<>();
 
         if (adminLogin) {
-
             custValueEventListener = new ValueEventListener() {
+
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    customersOrderList.clear();
+                    customersInfoList.clear();
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         InfoClass info = (postSnapshot.child ("info")).getValue(InfoClass.class);
                         DataSnapshot ds1 = postSnapshot.child ("order");
@@ -213,8 +246,8 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
                         ArrayList<ProductClass> cart = new ArrayList<>();
                         for ( DataSnapshot childSnapShot :  ds1.child("cart").getChildren()) {
 
-                          ProductClass pc = childSnapShot.getValue(ProductClass.class);
-                          cart.add(pc);
+                            ProductClass pc = childSnapShot.getValue(ProductClass.class);
+                            cart.add(pc);
                         }
 
 
@@ -235,14 +268,9 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
             custRef.addValueEventListener(custValueEventListener);
             customerPendingOrderAdapter = new CustomerPendingOrderListAdapter(UserActivity.this, customersInfoList, customersOrderList);
             productList.setAdapter(customerPendingOrderAdapter);
+            productList.setSelection(lastSeenItem);
 
         }
-
-
-
-
-
-
 
         cartValueEventListener = new ValueEventListener() {
             @Override
@@ -262,8 +290,7 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
                     }
 
                     updateCartCount(cartProductClassList.size());
-                    //productAdapter.setCartProductList(cartProductClassList);
-                    //productList.invalidateViews();
+
                 }
             }
 
@@ -307,13 +334,14 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
 
         productList.setAdapter(productAdapter);
 
+
         prodValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if( !UserActivity.this.isFinishing() && UserActivity.this.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED) ) {
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         ProductClass post = postSnapshot.getValue(ProductClass.class);
-                        System.out.println(post.getName() + " - " + post.getDescription() + "-" + post.getId());
+                        Log.d(TAG, post.getName() + " - " + post.getDescription() + "-" + post.getId());
                         ProductClass currentProduct = new ProductClass(post.getName()
                                 , post.getImage()
                                 , post.getPrice()
@@ -322,23 +350,97 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
                                 , post.getId()
                                 , post.getCategory()
                                 , post.getLimit());
-                        productClassList.add(currentProduct);
+
+
+                        if (!pd.daoAccess().isProductExist(currentProduct.getId())) {
+                            pd.daoAccess().insert(currentProduct);
+                        } else {
+                            ProductClass pc = pd.daoAccess().getProductBlocking(currentProduct.getId());
+                           /* pc.setImage(currentProduct.getImage());
+                            pc.setPrice(currentProduct.getPrice());
+                            pc.setDescription(currentProduct.getDescription());
+                            pc.setSeller(currentProduct.getSeller());
+                            pc.setCategory(currentProduct.getCategory());
+                            pc.setLimit(currentProduct.getLimit());
+                            pc.setName(currentProduct.getName());*/
+                            currentProduct.setRowId(pc.getRowId());
+                            pd.daoAccess().update(currentProduct);
+                        }
                     }
 
-                    productAdapter.setProductList(productClassList);
-                    productList.invalidateViews();
-                    //productList.setAdapter(productAdapter);
+                /*    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(() -> {
+                        List<ProductClass> products = pd.daoAccess().fetchAllTasksBlocking();
+                        int size = products.size();
+
+                        System.out.println(size);
+                    });
+
+
+              */
                 }
-                progress.dismiss();
+
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
+                Log.d(TAG, "The read failed: " + firebaseError.getMessage());
             }
         };
 
-        productRef.addValueEventListener(prodValueEventListener);
+        Firebase databaseVerRef = new Firebase("https://justbakers-285be.firebaseio.com/config/productVersion");
+        databaseVerRef.addValueEventListener (new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                databaseVer = (double) dataSnapshot.getValue();
+
+                if (isDatabaseVersionChanged((float) databaseVer)) {
+
+                    productRef.addValueEventListener(prodValueEventListener);
+
+                }
+                else {
+                    productList.invalidateViews();
+                }
+
+
+                pd.daoAccess().fetchAllTasks().observe(UserActivity.this, productClasses -> {
+
+                    productClassList.clear();
+
+                    productClassList.addAll(productClasses);
+                    productClassList.sort(productClassComparator);
+
+                    productList.setSelection(lastSeenItem);
+                    if ( isDatabaseVersionChanged((float)databaseVer)) {
+
+
+                        String str = "justbakers";
+                        File mydir = getApplicationContext().getDir(str, Context.MODE_PRIVATE);
+                        AtomicInteger downloadCount = new AtomicInteger(productClassList.size());
+                        for (ProductClass pc : productClassList) {
+
+                            String firebaseStr = pc.getImage();
+                            String localStr = firebaseStr.replace("/", "_");// getImage() should return String like  "Bakery/seller1/brownbread.png"
+                            File localFile = new File(mydir, localStr);
+
+                            if (localFile.exists()) {
+                                localFile.delete();
+                            }
+
+                            saveImgToInternalStorage(productClassList, downloadCount, firebaseStr, localFile);
+                        }
+                    }
+                    else {
+                        productAdapter.setProductList(productClassList);
+                        progress.dismiss();
+                    }
+                });
+
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {}
+        });
 
         /* ADDING THE VALUE EVENT LISTENER TO PRODUCTREF FOR DISPLAYING THE LIST OF PRODUCTS **/
         orderAdapter = new CustomOrderListAdapter(UserActivity.this
@@ -349,7 +451,7 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
                     orderTrackButtonClick(position,v, placedOrdersClassList, placedOrderRef);
                 }
                 ,/* ORDER DETAILS BUTTON ON CLICK LISTENER */
-                (position, v) -> {
+                    (position, v) -> {
                     /*FUNCTION DEFINED IN THE LAST- PUSHING THE PRODUCT TO CART DATABASE*/
                     orderDetailsButtonClick(position,v, placedOrdersClassList, placedOrderRef);
                 }
@@ -359,7 +461,7 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
                     cancelOrderButtonClick(position,v, placedOrdersClassList);
                 });
 
-            placedValueEventListener = new ValueEventListener() {
+        placedValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if( !UserActivity.this.isFinishing() && UserActivity.this.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED) ) {
@@ -379,7 +481,7 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
                     orderAdapter.setOrderList(placedOrdersClassList);
                     productList.invalidateViews();
                 }
-                progress.dismiss();
+                // progress.dismiss();
 
             }
             @Override
@@ -389,46 +491,28 @@ public class UserActivity extends AppCompatActivity implements NavigationView.On
         };
 
         placedOrderRef.addValueEventListener( placedValueEventListener);
-/*
- DeliveredOrderRef.addValueEventListener(new ValueEventListener() {
-@Override
-public void onDataChange(DataSnapshot dataSnapshot) {
-for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-OrderClass post = postSnapshot.getValue(OrderClass.class);
-OrderClass currentOrder = new OrderClass( post.getOrdernumber()
-,post.getCart()
-,post.getReceipt()
-,post.getDate()
-,post.getTime()
-,post.getStatus());
-DeliveredOrdersClassList.add(currentOrder);
-}
 
-if(DeliveredOrdersClassList!=null && deliveredOrderFlag){
-SETTING UP THE ADAPTER
-orderAdapter = new CustomOrderListAdapter(UserActivity.this
-,DeliveredOrdersClassList
-, null
-ORDER DETAILS BUTTON ON CLICK LISTENER
-new CustomOrderListAdapter.OrderButtonClickListener(){
-@Override
-public void onButtonClick(int position,View v) {
-FUNCTION DEFINED IN THE LAST- PUSHING THE PRODUCT TO CART DATABASE
-OrderDetailsButtonClick(position,v,PlacedOrdersClassList,PlacedOrderRef);
-}
-});
-DescriptionSET THE ADAPTER IN LISTVIEW AND DISMISS THE PROGRESS BAR
-ProductList.setAdapter(adapter);
-progress.dismiss();
-}
-}
-@Override
-public void onCancelled(FirebaseError firebaseError) {
-System.out.println("The read failed: " + firebaseError.getMessage());
-}
-});
+    }
 
- */
+    private boolean isDatabaseVersionChanged(float databaseVer) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        float versionVal = sharedPref.getFloat(getString(R.string.database_version_key), 0.0f);
+        if ( versionVal != databaseVer) {
+            /*
+            sharedPref.edit()
+                    .putFloat(getString(R.string.database_version_key), databaseVer)
+                    .apply(); */
+            return true;
+        }
+
+        return false;
+    }
+
+    private void updateDatabaseVersion ( float databaseVer) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPref.edit()
+                .putFloat(getString(R.string.database_version_key), databaseVer)
+                .apply();
     }
 
     @Override
@@ -438,25 +522,6 @@ System.out.println("The read failed: " + firebaseError.getMessage());
         super.onResume();
     }
 
-    /** THIS FUNCTION WILL UPDATE THE TOTAL CART COUNT IN FIREBASE **/
-    private void updateCartCounterInFirebase() {
-        Firebase counterRef = new Firebase("https://justbakers-285be.firebaseio.com/userData/counts/cartCount");
-        counterRef.runTransaction(new Transaction.Handler() {
-            @Override
-            public Transaction.Result doTransaction(MutableData currentData) {
-                if(currentData.getValue() == null) {
-                    currentData.setValue(1);
-                } else {
-                    currentData.setValue((Long) currentData.getValue() + 1);
-                }
-                return Transaction.success(currentData); //we can also abort by calling Transaction.abort()
-            }
-            @Override
-            public void onComplete(FirebaseError firebaseError, boolean committed, DataSnapshot currentData) {
-                //This method will be called once with the results of the transaction.
-            }
-        });
-    }
 
     /** THIS FUNCTION WILL UPDATE THE TOTAL CART COUNT IN FIREBASE **/
     public void resetCartCounterInFirebase() {
@@ -477,6 +542,10 @@ System.out.println("The read failed: " + firebaseError.getMessage());
         });
     }
 
+    private void insertOrUpdate (ProductDatabase pd, ProductClass pc) {
+        if(-1 == pd.daoAccess().insert(pc))
+            pd.daoAccess().update(pc);
+    }
     /**THIS FUNCTION WILL UPDATE THE BARGAIN REQUESTS COUNTER IN FIREBASE**/
     private void updateBargainCartCounterInFirebase() {
         Firebase counterRef = new Firebase("https://justbakers-285be.firebaseio.com/userData/counts/boxCount");
@@ -503,7 +572,10 @@ System.out.println("The read failed: " + firebaseError.getMessage());
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            //super.onBackPressed();
+            moveTaskToBack(true);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(1);
+
         }
     }
 
@@ -540,7 +612,7 @@ System.out.println("The read failed: " + firebaseError.getMessage());
 
         View menu_item_cart = menu.findItem(R.id.action_cart).getActionView();
         cartcounterTV = menu_item_cart.findViewById(R.id.cartcounter);
-       // bargaincounterTV = (TextView) menu_item_jb.findViewById(R.id.jbcounter);
+        // bargaincounterTV = (TextView) menu_item_jb.findViewById(R.id.jbcounter);
 
         /*UPDATING INITIAL THE CART COUNTS AND ONMENUITEMLISTENER FOR MENU_WITTY ITEM**/
 
@@ -560,8 +632,20 @@ System.out.println("The read failed: " + firebaseError.getMessage());
             @Override
             public void onClick(View v) {
 
-                Intent Cart_Intent = new Intent(UserActivity.this, CartActivity.class);
-                UserActivity.this.startActivity(Cart_Intent);
+                if(cartProductCount > 0 ) {
+                    Intent Cart_Intent = new Intent(UserActivity.this, CartActivity.class);
+                    UserActivity.this.startActivity(Cart_Intent);
+                } else {
+
+                    Toast toast = Toast.makeText(UserActivity.this, "", Toast.LENGTH_SHORT);
+                    View view = toast.getView();
+                    view.setBackgroundResource(R.drawable.rounded_square);
+                    TextView text = (TextView) view.findViewById(android.R.id.message);
+
+                    text.setText(" YOU GOT TO PUT SOMETHING IN THE CART! ");
+                    text.setTextColor(getResources().getColor(R.color.colorWhite));
+                    toast.show();
+                }
             }
         };
 
@@ -601,16 +685,19 @@ System.out.println("The read failed: " + firebaseError.getMessage());
             /*ONCLICKLISTENER ON THE CARDS-PASSING THE DETAILS VIA INTENT TO DESCRIPTION ACTIVITY**/
 
             productList.setOnItemClickListener((parent, view, position, id1) -> {
+                lastSeenItem = position;
                 ProductClass CurrentProduct = productAdapter.getItem(position);
                 Intent DescriptionIntent = new Intent(UserActivity.this, DescriptionActivity.class);
                 DescriptionIntent.putExtra("ProductDetails",CurrentProduct);
+                DescriptionIntent.putExtra("SelectedProductPosition",position);
                 UserActivity.this.startActivity(DescriptionIntent);
             });
             productList.setAdapter(productAdapter);
         }  if (id == R.id.nav_adminview) {
             llContact.setVisibility(View.GONE);
             productList.setVisibility(View.VISIBLE);
-            setActionBarTitle("Customer Orders");
+            String str = "Customer Orders : " + customerCount;
+            setActionBarTitle(str);
             productList.setAdapter(customerPendingOrderAdapter);
         }else if (id == R.id.nav_contact) {
             llContact.setVisibility(View.VISIBLE);
@@ -663,6 +750,7 @@ System.out.println("The read failed: " + firebaseError.getMessage());
             else {
                 cartcounterTV.setVisibility(View.VISIBLE);
                 cartcounterTV.setText(Integer.toString(new_number));
+                cartProductCount = new_number;
             }
         });
     }
@@ -712,8 +800,7 @@ System.out.println("The read failed: " + firebaseError.getMessage());
         /* PUSHING THE PRODUCT TO THE CART DATABASE **/
         ref.child(CartProduct.getId()).setValue(CartProduct);
         addedInfo.setText("This product is in your cart. Max quantity : " + CartProduct.getLimit());
-        //THIS FUNCTION WILL UPDATE THE CART COUNTER NODE IN OUR DATABASE
-        updateCartCounterInFirebase();
+
         info.hoang8f.widget.FButton addCart = v.findViewById(R.id.Addtocart);
         info.hoang8f.widget.FButton addItem = v.findViewById(R.id.addbutton);
         info.hoang8f.widget.FButton subItem = v.findViewById(R.id.subbutton);
@@ -787,13 +874,13 @@ System.out.println("The read failed: " + firebaseError.getMessage());
         if ( vis == View.GONE) {
             vis = View.VISIBLE;
             // order_details_button.setCompoundDrawables(null, null, dr,null);
-          //  order_details_button.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.tripledot_horizontal, 0);
+            //  order_details_button.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.tripledot_horizontal, 0);
 
         }
         else {
             vis = View.GONE;
             // Drawable dr = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_expand_more_black_24dp);
-          //  order_details_button.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.tripledot_horizontal, 0);
+            //  order_details_button.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.tripledot_horizontal, 0);
 
 
         }
@@ -826,7 +913,7 @@ System.out.println("The read failed: " + firebaseError.getMessage());
         String str = curOrder.getOrdernumber();
         String str1[] = str.split("#");
 
-       android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
 
         builder.setMessage("Are you sure you want to Cancel this order.").setPositiveButton (android.R.string.yes, (dialog, whichButton) -> {
             Firebase CustomerChangeOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/"+userId+"/orders/placed/"+str1[1]);
@@ -919,21 +1006,21 @@ System.out.println("The read failed: " + firebaseError.getMessage());
                 ,Product.getQuantity(), Product.getLimit());
 
 
-       int qty = Integer.parseInt(qtyButton.getText().toString());
+        int qty = Integer.parseInt(qtyButton.getText().toString());
 
-       if((qty+1) <= Product.getLimit()) {
+        if((qty+1) <= Product.getLimit()) {
             CartProduct.setQuantity(++qty);
             Product.setQuantity(qty);
-           /* PUSHING THE PRODUCT TO THE CART DATABASE **/
+            /* PUSHING THE PRODUCT TO THE CART DATABASE **/
             ref.child(CartProduct.getId()).setValue(CartProduct);
-            //THIS FUNCTION WILL UPDATE THE CART COUNTER NODE IN OUR DATABASE
-            updateCartCounterInFirebase();
+
             qtyButton.setText(CartProduct.getQuantity().toString());
+            //  cartProductCount++;
         }
         else {
             incrButton.setEnabled(false);
             //Custom Toast Display Function defined below - Displays custom toast message
-         //   customToastDisplay(UserActivity.this,getResources().getString(R.string.QuantityLimitExceeded));
+            //   customToastDisplay(UserActivity.this,getResources().getString(R.string.QuantityLimitExceeded));
         }
 
         //throw new RuntimeException("Test Crash"); // Force a crash
@@ -942,8 +1029,6 @@ System.out.println("The read failed: " + firebaseError.getMessage());
     public void subItemButtonClick(int position, View v, ArrayList<ProductClass> ProductList , Firebase ref){
         TextView addedInfo = v.findViewById(R.id.addedInfo);
         info.hoang8f.widget.FButton qtyButton = v.findViewById(R.id.quantitybutton);
-        //  addedInfo.setVisibility(View.VISIBLE);
-        //  addedInfo.setText("Reduced One Item");
 
         ProductClass Product = ProductList.get(position);
         // WE HAVE DEFINED NEW VARIABLE FOR CART PRODUCT AS WE ALSO HAVE TO ADD QUANTITY TO CART
@@ -961,9 +1046,8 @@ System.out.println("The read failed: " + firebaseError.getMessage());
         CartProduct.setQuantity(--qty);
         Product.setQuantity(qty);
         /* PUSHING THE PRODUCT TO THE CART DATABASE **/
-        ref.child(CartProduct.getId()).setValue(CartProduct);
-        //THIS FUNCTION WILL UPDATE THE CART COUNTER NODE IN OUR DATABASE
-        updateCartCounterInFirebase();
+        ref.child(CartProduct.getId()).removeValue();
+
         info.hoang8f.widget.FButton addCart = v.findViewById(R.id.Addtocart);
         info.hoang8f.widget.FButton addItem = v.findViewById(R.id.addbutton);
         info.hoang8f.widget.FButton subItem = v.findViewById(R.id.subbutton);
@@ -979,6 +1063,7 @@ System.out.println("The read failed: " + firebaseError.getMessage());
             quantity.setText(CartProduct.getQuantity().toString());
             info.hoang8f.widget.FButton incrButton = v.findViewById(R.id.addbutton);
             incrButton.setEnabled(true);
+            //   cartProductCount--;
 
         }
 
@@ -1003,6 +1088,57 @@ System.out.println("The read failed: " + firebaseError.getMessage());
             return 0;
         }
     };
+
+    Comparator<ProductClass> productClassComparator = (e1, e2) -> {
+        if(e1.getId().compareTo(e2.getId()) < 0) {
+            return -1;
+        } else if (e1.getId().compareTo(e2.getId()) > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    };
+
+    private void signInAnonymously() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signInAnonymously().addOnSuccessListener ( new  OnSuccessListener<AuthResult>() {
+            @Override
+            public void onSuccess(AuthResult authResult) {
+                Log.e("signInAnonymously", "signInAnonymously:SUCCESS");
+            }
+        })
+                .addOnFailureListener( new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.e("signInAnonymously", "signInAnonymously:FAILURE", exception);
+                    }
+                });
+    }
+
+    private void saveImgToInternalStorage(final ArrayList<ProductClass> productClassList, AtomicInteger downloadCount, String firebasePath, File localPath){
+        FirebaseStorage firebaseStorage  = FirebaseStorage.getInstance();
+        StorageReference fileRef = firebaseStorage.getReference().child(firebasePath);
+
+        FileDownloadTask fileDownloadTask = fileRef.getFile(localPath);
+
+        try {
+            fileDownloadTask.addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                    if( 0 >= downloadCount.decrementAndGet()) {
+                        productAdapter.setProductList(productClassList);
+                        productList.invalidateViews();
+                        updateDatabaseVersion((float)databaseVer);
+                        progress.dismiss();
+                    }
+                }
+            });
+        }catch (NullPointerException ignore) {
+
+        }
+
+
+    }
 }
 
 

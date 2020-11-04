@@ -41,6 +41,30 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="" />
+        <LinearLayout
+            android:layout_weight = "1"
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content" >
+            <Button
+                android:id="@+id/confirmOrderBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Confrim" />
+
+            <Button
+                android:id="@+id/processOrderBtn"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Process" />
+
+            <Button
+                android:id="@+id/orderDeliveredBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delivered" />
+        </LinearLayout>
 
     </TableRow>
 

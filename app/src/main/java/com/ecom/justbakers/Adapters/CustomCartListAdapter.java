@@ -19,6 +19,7 @@ import com.ecom.justbakers.DescriptionActivity;
 import com.ecom.justbakers.R;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,16 +31,18 @@ public class CustomCartListAdapter extends BaseAdapter {
     private CustomProductListAdapter.ButtonClickListener mDecrQtyClickListener = null;
     private LayoutInflater mInflater;
     private Context context;
+    private int screenWidth;
     public CustomCartListAdapter(ArrayList<ProductClass> CartProductList, LayoutInflater inflater
             , Context context,CustomProductListAdapter.ButtonClickListener mdeleteClickListener
             , CustomProductListAdapter.ButtonClickListener mIncrQtyClickListener
-            , CustomProductListAdapter.ButtonClickListener mDecrQtyClickListener ) {
+            , CustomProductListAdapter.ButtonClickListener mDecrQtyClickListener, int screenWidth) {
         mCartProductList = CartProductList;
         mInflater = inflater;
         this.context = context;
         this.mdeleteClickListener = mdeleteClickListener;
         this.mIncrQtyClickListener = mIncrQtyClickListener;
         this.mDecrQtyClickListener = mDecrQtyClickListener;
+        this.screenWidth = screenWidth;
     }
 
     @Override
@@ -81,9 +84,14 @@ public class CustomCartListAdapter extends BaseAdapter {
         final ProductClass curProduct = mCartProductList.get(position);
 
         Picasso.with(context).setIndicatorsEnabled(false);
+        String str = "justbakers" ;
+        File mydir =    context.getDir(str, Context.MODE_PRIVATE);
+        String firebaseStr = curProduct.getImage();
+        String localStr = firebaseStr.replace("/", "_");
+        File localFile = new File(mydir, localStr);
         Picasso.with(context)
-                .load(curProduct.getImage())
-                .resize(200, 200)
+                .load(localFile)
+            //    .resize(200, 200)
                 .placeholder(R.drawable.loader)
                 .error(R.drawable.loader)
                 .into(item.ProductImageView);
@@ -106,6 +114,10 @@ public class CustomCartListAdapter extends BaseAdapter {
         item.IncrQuantity.setTag(position);
         item.DeleteButton.setTag(position);
         item.DecrQuantity.setTag(position);
+       
+        item.ProductImageView.getLayoutParams().width = screenWidth/5;
+        item.ProductImageView.getLayoutParams().height = Math.round(screenWidth / 5);
+        item.ProductImageView.requestLayout();
 
         final View finalConvertView = convertView;
 

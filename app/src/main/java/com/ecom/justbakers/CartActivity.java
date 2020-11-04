@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ public class CartActivity extends AppCompatActivity {
     static OrderClass.OrderReceiptClass receipt;
     private Integer TotalPrice = 0;
     ValueEventListener cart_vel;
+    ValueEventListener addr_vel;
     Firebase cartRef;
     Firebase addressRef;
     private ListView cartlistView;
@@ -45,6 +47,8 @@ public class CartActivity extends AppCompatActivity {
     @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
@@ -81,13 +85,13 @@ public class CartActivity extends AppCompatActivity {
         cartRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userId + "/orders/pending/cart");
         addressRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userId + "/info");
 
-        ValueEventListener addr_vel = new ValueEventListener() {
+        addr_vel = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 InfoClass ic = (InfoClass) dataSnapshot.getValue(InfoClass.class);
 
-                addressView.setText("\bDeliver To\b " + "\n\n"+ ic.getName() + "\n" + ic.getFlatNumber() + "\n" + ic.getSociety() + "\n" + ic.getArea());
+                addressView.setText("Deliver To\b " + "\n\n"+ ic.getName() + "\n" + ic.getFlatNumber() + "\n" + ic.getSociety() + "\n" + "PUNE - " + ic.getPincode());
                 contactView.setText("Contact Number\n\n" + ic.getPhoneNumber());
                 ///Set Address Details
             }
@@ -125,20 +129,8 @@ public class CartActivity extends AppCompatActivity {
                     ProductID.add(product.getId());
                 }
                 /** SETTING THE ADAPTER IF CARTPRODUCTLIST IS NOT NULL **/
-                if (CartProductList.isEmpty()) {
-                    progress.dismiss();
-                    /** CUSTOM TOAST MESSAGE **/
-                    Toast toast = Toast.makeText(CartActivity.this, "", Toast.LENGTH_SHORT);
-                    View view = toast.getView();
-                    view.setBackgroundResource(R.drawable.rounded_square);
-                    TextView text = (TextView) view.findViewById(android.R.id.message);
-
-                    text.setText(" YOU GOT TO PUT SOMETHING IN THE CART! ");
-                    text.setTextColor(getResources().getColor(R.color.colorWhite));
-                    toast.show();
-                    Intent intent = new Intent(CartActivity.this, UserActivity.class);
-                    CartActivity.this.startActivity(intent);
-                } else {
+                if (!CartProductList.isEmpty()) {
+                    int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
                     adapter = new CustomCartListAdapter(CartProductList, getLayoutInflater(), CartActivity.this, new CustomProductListAdapter.ButtonClickListener() {
 
                         /**
@@ -162,17 +154,22 @@ public class CartActivity extends AppCompatActivity {
                         public void onButtonClick(int position, View v) {
                             decrementQuantity(position, v);
                         }
-                    });
+                    }, screenWidth);
                     /** SETTING THE ADAPTER IN THE LIST VIEW **/
+
+                    ViewGroup.LayoutParams params = cartlistView.getLayoutParams();
+                    params.height = 300 * CartProductList.size();
+                    cartlistView.setLayoutParams(params);
+                    cartlistView.requestLayout();
                     cartlistView.setAdapter(adapter);
                     String str;
                     if(TotalPrice < 300 ) {
-                        str = "\nDelivery Charges : 30/-   " + "(For Orders less than 300/-)";
+                        str = "\n\tDelivery Charges : 30/-   " + "(For Orders less than 300/-)";
                         TotalPrice = TotalPrice + 30;
                     } else {
-                        str = "\nDelivery Charges : 0/-   " + "\n(Free delivery for Orders above 300/-)";
+                        str = "\n\tDelivery Charges : 0/-   " + "\n\t(Free delivery for Orders above 300/-)";
                     }
-                    tv_amount.setText(str + "\nTotal Amount is : " + TotalPrice.toString()+ "/-\n");
+                    tv_amount.setText(str + "\n\tTotal Amount is : " + TotalPrice.toString()+ "/-\n");
                 }
             }
 
@@ -371,6 +368,7 @@ public class CartActivity extends AppCompatActivity {
 
         super.onStop();
         cartRef.removeEventListener(cart_vel);
+        addressRef.removeEventListener(addr_vel);
     }
 
     public static OrderClass.OrderReceiptClass getReceipt() {

@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <ImageView
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="250dp"
                 android:id="@+id/productimageview"
                 android:src="@mipmap/ic_launcher"

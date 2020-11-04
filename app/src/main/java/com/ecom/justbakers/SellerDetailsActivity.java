@@ -1,5 +1,6 @@
 package com.ecom.justbakers;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -11,6 +12,7 @@ import com.ecom.justbakers.Classes.ProductClass;
 import com.firebase.client.Firebase;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,8 +52,13 @@ public class SellerDetailsActivity extends AppCompatActivity {
         SPName.setText(Product.getName());
         SPPrice.setText(Integer.toString(Product.getPrice()));
         SPDescription.setText(Product.getDescription());
+        String str = "justbakers" ;
+        File mydir =     getApplicationContext().getDir(str, Context.MODE_PRIVATE);
+        String firebaseStr = Product.getImage();
+        String localStr = firebaseStr.replace("/", "_");
+        File localFile = new File(mydir, localStr);
         Picasso.with(this)
-                .load(Product.getImage())
+                .load(localFile)
                 .error(R.drawable.jb)
                 .into(SPImage);
         productid = Product.getId();

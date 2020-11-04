@@ -85,7 +85,7 @@ public class OrderDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.V
             }
             case 1: {
                 ((ViewHolder) holder).textView.setText(mDataset[position]);
-                if (mOrder.getTimeElapsed() > CONFIRMATION_TIME || mOrder.getStatus().equals("delivered"))
+                if (mOrder.getStatus().equals("confirmed") || mOrder.getStatus().equals("delivered"))
                   ((ViewHolder) holder).timelineView.setMarker(ContextCompat.getDrawable(mContext, R.drawable.ic_marker));
                 else
                   ((ViewHolder) holder).timelineView.setMarker(ContextCompat.getDrawable(mContext, R.drawable.ic_marker_inactive));
@@ -93,7 +93,7 @@ public class OrderDetailsListAdapter extends RecyclerView.Adapter<RecyclerView.V
             }
             case 2: {
                 ((ViewHolder) holder).textView.setText(mDataset[position]);
-                if (mOrder.getTimeElapsed() > PROCESSING_TIME || mOrder.getStatus().equals("delivered"))
+                if (mOrder.getStatus().equals("processing") || mOrder.getStatus().equals("delivered"))
                   ((ViewHolder) holder).timelineView.setMarker(ContextCompat.getDrawable(mContext, R.drawable.ic_marker));
                 else
                   ((ViewHolder) holder).timelineView.setMarker(ContextCompat.getDrawable(mContext, R.drawable.ic_marker_inactive));

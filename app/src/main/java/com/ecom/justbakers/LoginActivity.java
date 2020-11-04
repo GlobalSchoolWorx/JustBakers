@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.Task;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -65,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.i(TAG, "onCreate:" + "LoginActivity");
         setContentView(R.layout.activity_login);
+
         getAdmin();
         getSignIn();
 
@@ -273,7 +275,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    public static String getDefaults(String key, Context context) {
+    public static @NonNull String getDefaults(String key, Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(key, "");
     }

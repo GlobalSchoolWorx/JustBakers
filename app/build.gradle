@@ -25,8 +25,8 @@ android {
         applicationId "com.ecom.justbakers"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 16
-        versionName "1.6"
+        versionCode 18
+        versionName "1.8"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -101,4 +101,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.3.2'
     implementation "androidx.room:room-runtime:2.2.5"
     annotationProcessor "androidx.room:room-compiler:2.2.5"
+    implementation 'com.zolad:zoominimageview:1.0.0'
 }

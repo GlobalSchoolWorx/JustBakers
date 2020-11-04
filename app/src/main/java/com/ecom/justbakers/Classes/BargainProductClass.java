@@ -1,8 +1,12 @@
 package com.ecom.justbakers.Classes;
 
+import android.graphics.Matrix;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by brainbreaker.
@@ -21,12 +25,15 @@ public class BargainProductClass extends ProductClass implements Serializable{
     private Integer finalprice;
     private Integer quantity;
     private long timestamp;
-    public BargainProductClass(){
+
+    public BargainProductClass(String id){
+        super(id);
     }
 
     public BargainProductClass(String name, String image, Integer price, Integer bidValue
             ,String description,String seller, Integer status
             , String id, String additionals, Integer finalprice, Integer quantity, long timestamp){
+        super(id);
         this.name = name;
         this.image = image;
         this.price = price;
@@ -62,7 +69,7 @@ public class BargainProductClass extends ProductClass implements Serializable{
     public Integer getStatus(){
         return status;
     }
-    public String getId(){
+    public @NonNull String getId(){
         return id;
     }
     public String getAdditionals(){

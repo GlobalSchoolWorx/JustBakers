@@ -22,14 +22,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <ImageView
+
+            <com.zolad.zoominimageview.ZoomInImageView
+                android:id="@+id/ProductImageView"
                 android:layout_width="fill_parent"
                 android:layout_height="250dp"
-                android:id="@+id/ProductImageView"
-                android:src="@drawable/jb"
-                android:contentDescription="Product Image"
                 android:layout_gravity="center"
-                android:padding="0dp"/>
+                android:contentDescription="Product Image"
+                android:padding="0dp"
+                android:src="@drawable/jb" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -79,90 +80,12 @@
                 android:gravity="center_horizontal"
                 android:inputType="textMultiLine"
                 android:layout_margin="5dp" />
-            <!--
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="1"
-                android:gravity="center_horizontal"
-                android:layout_gravity="center_horizontal">
-            <ImageButton
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:id="@+id/imageButton"
-                android:background="@drawable/rounded_rectangle"
-                android:src="@android:drawable/stat_notify_chat"
-                android:layout_marginRight="0dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp" />
 
-            <info.hoang8f.widget.FButton
-                android:id="@+id/StartChatButton"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:text=" START A CHAT WITH SELLER  "
-                android:textColor="@android:color/white"
-                fbutton:fButtonColor="@color/colorPrimary"
-                fbutton:shadowEnabled="false"
-                fbutton:cornerRadius="0dp"
-                android:textSize="18sp"
-                android:layout_marginRight="0dp"
-                android:layout_marginLeft="0dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:gravity="left|center_vertical|center_horizontal"
-                android:fontFamily="serif" />
-
-            </LinearLayout>
-    -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="@color/fbutton_color_carrot"/>
-    <!--
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp">
-                <info.hoang8f.widget.FButton
-                    android:id="@+id/AddToCart"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="ADD TO CART"
-                    android:focusable="false"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    android:layout_gravity="left"
-                    fbutton:fButtonColor="@color/colorPrimary"
-                    fbutton:shadowColor="@color/colorPrimaryDark"
-                    fbutton:shadowEnabled="true"
-                    fbutton:shadowHeight="5dp"
-                    fbutton:cornerRadius="5dp"
-                    android:layout_weight="3"
-                    android:layout_margin="10dp"
-                    android:fontFamily="serif" />
 
-                <info.hoang8f.widget.FButton
-                    android:id="@+id/BargainButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="BARGAIN"
-                    android:textColor="@android:color/white"
-                    fbutton:fButtonColor="@color/colorPrimary"
-                    fbutton:shadowColor="@color/colorPrimaryDark"
-                    fbutton:shadowEnabled="true"
-                    fbutton:shadowHeight="5dp"
-                    fbutton:cornerRadius="5dp"
-                    android:textSize="18sp"
-                    android:layout_weight="3"
-                    android:layout_margin="10dp"
-                    android:layout_gravity="right"
-                    android:fontFamily="serif" />
-
-            </LinearLayout>
-            -->
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

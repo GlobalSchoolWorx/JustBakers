@@ -1,5 +1,6 @@
 package com.ecom.justbakers;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -10,10 +11,15 @@ import android.widget.TextView;
 import com.ecom.justbakers.Classes.ProductClass;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 public class DescriptionActivity extends AppCompatActivity {
     ProductClass ProductDetails;
+    private int position;
     @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +30,7 @@ public class DescriptionActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         /**GETTING THE PRODUCT DETAILS FROM THE INTENT**/
         ProductDetails = (ProductClass) getIntent().getSerializableExtra("ProductDetails");
+        position =  getIntent().getIntExtra("SelectedProductPosition", 0);
         /**FINDING THE VIEWS FROM THE LAYOUT OF THIS ACTIVITY**/
         ImageView PImage = (ImageView) findViewById(R.id.ProductImageView);
         TextView PName = (TextView) findViewById(R.id.ProductName);
@@ -40,8 +47,14 @@ public class DescriptionActivity extends AppCompatActivity {
         Picasso.with(DescriptionActivity.this).setIndicatorsEnabled(true);  //only for debug tests
 
         if ( ProductDetails != null ) {
+
+            String str = "justbakers" ;
+            File mydir =     getApplicationContext().getDir(str, Context.MODE_PRIVATE);
+            String firebaseStr = ProductDetails.getImage();
+            String localStr = firebaseStr.replace("/", "_");
+            File localFile = new File(mydir, localStr);
             Picasso.with(DescriptionActivity.this)
-                    .load(ProductDetails.getImage())
+                    .load(localFile)
                     .placeholder(R.drawable.loader)
                     .error(R.drawable.loader)
                     .into(PImage);
@@ -146,6 +159,7 @@ public class DescriptionActivity extends AppCompatActivity {
             case android.R.id.home:
                 // BACK CLICKED. GO TO HOME.
                 Intent intent = new Intent(this, UserActivity.class);
+                intent.putExtra("SelectedProductPosition", position);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 //FINISH THE CURRENT ACTIVITY
@@ -154,5 +168,17 @@ public class DescriptionActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        // BACK CLICKED. GO TO HOME.
+        Intent intent = new Intent(this, UserActivity.class);
+        intent.putExtra("SelectedProductPosition", position);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        //FINISH THE CURRENT ACTIVITY
+        this.finish();
     }
 }

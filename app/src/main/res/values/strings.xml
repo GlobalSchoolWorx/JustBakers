@@ -156,6 +156,7 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="your_orders">Your Orders</string>
+    <string name="database_version_key" />
     <!-- TODO: Remove or change this placeholder text -->
     <string-array name="UserTips">
         <item>"Tip!- We also give unexpected discounts to first buyer of a product if you add the product to cart directly!

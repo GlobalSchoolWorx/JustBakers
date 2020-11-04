@@ -24,7 +24,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -45,7 +44,6 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-
         CustomerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -61,6 +59,11 @@ public class AdminActivity extends AppCompatActivity {
                 latch1.countDown();
                 latch = new CountDownLatch(CustomerNameList.size());
                 CustomerPlacedOrderList.clear();
+                Button cntButton = findViewById(R.id.cntButton);
+
+                cntButton.setText("Total Customer Count: "+ CustomerNameList.size());
+
+
                 for (String str:  CustomerNameList) {
 
                     Firebase CustomerOrderRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/"+str+"/orders/placed");

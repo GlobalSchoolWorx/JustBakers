@@ -8,7 +8,7 @@ public class InfoClass {
     private String name;
     private String gmail;
     private String phoneNumber;
-    private String area;
+    private String pincode;
     private String society;
     private String flatNumber;
 
@@ -20,7 +20,7 @@ public class InfoClass {
         this.name = name;
         this.gmail = gmail;
         this.phoneNumber = phoneNumber;
-        this.area = area;
+        this.pincode = pincode;
         this.society = society;
         this.flatNumber = flatNumber;
 
@@ -39,8 +39,8 @@ public class InfoClass {
     public String getPhoneNumber(){
         return phoneNumber;
     }
-    public String getArea(){
-        return area;
+    public String getPincode(){
+        return pincode;
     }
     public String getSociety(){
         return society;
