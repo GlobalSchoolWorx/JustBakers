@@ -1,96 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="20dp"
+    android:layout_height="wrap_content"
     android:stretchColumns="1">
-<!--
-    <TableRow>
-        <info.hoang8f.widget.FButton
-            android:id="@+id/btn_ordernumber"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:text="ORDER #"
-            android:focusable="false"
-            android:textColor="@android:color/white"
-            fbutton:fButtonColor="#AE6F33"
-            fbutton:shadowColor="#AE6F33"
-            fbutton:shadowEnabled="true"
-            fbutton:shadowHeight="5dp"
-            fbutton:cornerRadius="5dp"
-            android:textSize="18sp"
-            android:layout_margin="10dp"
-            android:fontFamily="serif"
-            android:textStyle="bold"
-            android:layout_weight="1"
-            android:layout_column="1"/>
 
-        <info.hoang8f.widget.FButton
-            android:id="@+id/btn_amount"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:text="ORDER #"
-            android:focusable="false"
-            android:textColor="@android:color/white"
-            fbutton:fButtonColor="#AE6F33"
-            fbutton:shadowColor="#AE6F33"
-            fbutton:shadowEnabled="true"
-            fbutton:shadowHeight="5dp"
-            fbutton:cornerRadius="5dp"
-            android:textSize="18sp"
-            android:layout_margin="10dp"
-            android:fontFamily="serif"
-            android:textStyle="bold"
-            android:layout_weight="1"
-            android:layout_column="1"/>
-
-        <info.hoang8f.widget.FButton
-            android:id="@+id/btn_orderdetails"
-            android:layout_column="3"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:text="DETAILS"
-            android:focusable="false"
-            android:textColor="@android:color/white"
-            fbutton:fButtonColor="#AE6F33"
-            android:layout_weight="1"
-            fbutton:shadowColor="#AE6F33"
-            fbutton:shadowEnabled="true"
-            fbutton:shadowHeight="5dp"
-            fbutton:cornerRadius="5dp"
-            android:textSize="18sp"
-            android:layout_margin="10dp"
-            android:fontFamily="serif"
-            android:textStyle="bold" />
-
-        <info.hoang8f.widget.FButton
-            android:id="@+id/track_order_btn"
-            android:layout_width="0dp"
-            android:layout_column="4"
-            android:layout_height="75dp"
-            android:layout_weight="1"
-            android:text="TRACK ORDER"
-            android:focusable="false"
-            android:textColor="@android:color/white"
-            fbutton:fButtonColor="#AE6F33"
-            fbutton:shadowColor="#AE6F33"
-            fbutton:shadowEnabled="true"
-            fbutton:shadowHeight="5dp"
-            fbutton:cornerRadius="5dp"
-            android:textSize="18sp"
-            android:layout_margin="10dp"
-            android:fontFamily="serif"
-            android:textStyle="bold" />
-    </TableRow>
-
--->
-
-    <TableRow android:background="@color/colorWhite" android:padding="5dp"
-        android:layout_marginBottom="10dp">
+    <TableRow
+        android:background="@color/colorWhite" >
         <TextView
-            android:id = "@+id/btn_orderdate"
+            android:id = "@+id/btn_orderDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -103,15 +24,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="178"
-            />/>
+            />
 
         <TextView
-            android:id = "@+id/tv_orderdetails"
+            android:id = "@+id/orderStatusTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text=""
-           />
+            />
 
         <TextView
             android:id = "@+id/track_order_btn"
@@ -123,36 +44,34 @@
 
     </TableRow>
 
-
     <TableRow>
-
-    <info.hoang8f.widget.FButton
-        android:id="@+id/orderDetailTextView"
-        android:textAlignment="textStart"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:fontFamily="serif"
-        android:includeFontPadding="true"
-        android:lineSpacingExtra="12sp"
-        android:visibility="gone"
-        android:text="\n\n\n"
-        android:maxLines="200"
-        android:singleLine="false"
-        fbutton:fButtonColor="@color/fbutton_color_carrot"
-        fbutton:shadowColor="@color/fbutton_color_carrot"
-        fbutton:shadowEnabled="true"
-        fbutton:shadowHeight="5dp"
-        fbutton:cornerRadius="5dp"
-        android:stretchColumns="1,2,3,4"
-        android:textColor="@color/colorWhite"
-        android:textColorHighlight="@color/colorWhite"
-        android:textColorLink="@color/fbutton_color_carrot"
-   />
+        <info.hoang8f.widget.FButton
+            android:id="@+id/orderDetailTextView"
+            android:textAlignment="textStart"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:includeFontPadding="true"
+            android:lineSpacingExtra="3sp"
+            android:visibility="gone"
+            android:text="\n\n\n"
+            android:textAllCaps="false"
+            android:maxLines="200"
+            android:singleLine="false"
+            fbutton:fButtonColor="@color/fbutton_color_wet_asphalt"
+            fbutton:shadowColor="@color/fbutton_color_wet_asphalt"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"
+            android:stretchColumns="1,2,3,4"
+            android:textColor="@color/colorWhite"
+            android:textColorHighlight="@color/colorWhite"
+            android:textColorLink="@color/fbutton_color_carrot"
+            />
 
     </TableRow>
     <TableRow>
-
         <info.hoang8f.widget.FButton
             android:id="@+id/cancel_order_btn"
             android:layout_width="0dp"
@@ -178,14 +97,23 @@
             />
     </TableRow>
 
-   <TableRow>
-    <androidx.recyclerview.widget.RecyclerView
+    <TableRow>
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:id="@+id/track_order_recycler_view"
+            tools:listitem="@layout/order_details_recyle_item_layout"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    </TableRow>
 
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:id="@+id/recycleView"/>
-   </TableRow>
-
+    <TableRow >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:id="@+id/dropshadow"
+            android:background="@drawable/dropshadow"/>
+    </TableRow>
 </TableLayout>

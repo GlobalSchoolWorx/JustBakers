@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@null"
+        android:visibility="gone"
         android:layout_alignTop="@id/carticon"
         android:layout_alignEnd="@id/carticon"
         android:layout_alignRight="@id/carticon"

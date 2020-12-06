@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@+id/nav_products">
+
+    <fragment
+        android:id="@+id/nav_products"
+        android:name="com.ecom.justbakers.fragments.ProductsFragment"
+        android:label="@string/products"
+        tools:layout="@layout/fragment_products">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_orders"
+        android:name="com.ecom.justbakers.fragments.OrdersFragment"
+        android:label="@string/your_orders"
+        tools:layout="@layout/fragment_customer_orders">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_admin"
+        android:name="com.ecom.justbakers.fragments.AdminFragment"
+        android:label="@string/customer_orders"
+        tools:layout="@layout/fragment_admin">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_contacts"
+        android:name="com.ecom.justbakers.fragments.ContactsFragment"
+        android:label="@string/contact_us"
+        tools:layout="@layout/fragment_contact">
+    </fragment>
+
+    <action
+        android:id="@+id/action_to_orders_fragment"
+        app:destination="@id/nav_orders"
+        app:popUpTo="@+id/nav_orders"
+        app:popUpToInclusive="true"/>
+
+    <action
+        android:id="@+id/action_to_admin_fragment"
+        app:destination="@id/nav_admin"
+        app:popUpTo="@+id/nav_admin"
+        app:popUpToInclusive="true"/>
+
+    <action
+        android:id="@+id/action_to_products_fragment"
+        app:destination="@id/nav_products"
+        app:popUpTo="@+id/nav_products"
+        app:popUpToInclusive="true"/>
+
+    <action
+        android:id="@+id/action_to_contacts_fragment"
+        app:destination="@id/nav_contacts"
+        app:popUpTo="@+id/nav_contacts"
+        app:popUpToInclusive="true"/>
+</navigation>

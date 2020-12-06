@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/order_confirmation_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="5dp"
+    android:orientation="vertical"
+    android:background="@drawable/wall2">
+    <TextView
+        android:id="@+id/addressView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="15"
+        android:textSize="20sp"
+        android:layout_marginStart="8dp"
+        android:text="@string/delivery_address" />
+
+    <TextView
+        android:id="@+id/phoneNumberView"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="@string/phone_number" />
+    <Button
+        android:id="@+id/chgAddrButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:drawableStart="@android:drawable/ic_menu_manage"
+        android:text="@string/change"
+        android:layout_gravity="end"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="#AE6F33"
+        />
+
+    <View android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        />
+
+    <TextView android:id="@+id/summary_text_view"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="10dp"
+        android:background="#2F000000"
+        android:textColor="@color/colorWhite"/>
+
+    <info.hoang8f.widget.FButton
+        android:id="@+id/checkout_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/proceed_to_checkout"
+        android:textColor="@android:color/white"
+        android:drawableStart="@drawable/cart"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        fbutton:shadowColor="#AE6F33"
+        fbutton:cornerRadius="5dp"
+        fbutton:fButtonColor="#AE6F33"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="5dp"/>
+</LinearLayout>

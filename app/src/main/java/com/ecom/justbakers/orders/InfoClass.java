@@ -16,20 +16,21 @@ public class InfoClass {
     }
 
 
-    public InfoClass( String gmail, String name, String phoneNumber, String area, String society, String flatNumber){
+    public InfoClass( String gmail, String name, String phoneNumber, String pinCode, String society, String flatNumber){
         this.name = name;
         this.gmail = gmail;
         this.phoneNumber = phoneNumber;
-        this.pincode = pincode;
+        this.pincode = pinCode;
         this.society = society;
         this.flatNumber = flatNumber;
+    }
 
-
+    public void setName(String name){
+        this.name = name;
     }
 
     /* IMPORTANT FUNCTIONS TO BE IMPLEMENTED ELSE FIREBASE WILL CRASH
        WHILE SETTING THE VALUE OF THE OBJECT */
-
     public String getName(){
         return name;
     }

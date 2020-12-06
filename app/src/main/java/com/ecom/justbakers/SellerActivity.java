@@ -6,13 +6,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import com.ecom.justbakers.R;
-import com.ecom.justbakers.SellerFragments.AddProductFragment;
-import com.ecom.justbakers.SellerFragments.BargainRequestsFragment;
-import com.ecom.justbakers.SellerFragments.ChatFragment;
-import com.ecom.justbakers.SellerFragments.ProductFragment;
-import com.ecom.justbakers.SellerFragments.UserDemandsFragment;
-import com.ecom.justbakers.sms_verify.VerifyOtpActivity;
+
+import com.ecom.justbakers.seller_fragments.AddProductFragment;
+import com.ecom.justbakers.seller_fragments.BargainRequestsFragment;
+import com.ecom.justbakers.seller_fragments.ChatFragment;
+import com.ecom.justbakers.seller_fragments.ProductFragment;
+import com.ecom.justbakers.seller_fragments.UserDemandsFragment;
+import com.ecom.justbakers.verify.sms.VerifyOtpActivity;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -22,6 +22,8 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import static com.ecom.justbakers.LoginActivity.SESSION_KEY_USER_ID;
 
 public class SellerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -48,7 +50,7 @@ public class SellerActivity extends AppCompatActivity implements NavigationView.
             @Override
             public void onClick(View v) {
                 Intent signoutintent = new Intent(SellerActivity.this, LoginActivity.class);
-                LoginActivity.setDefaults("UserID","",SellerActivity.this);
+                LoginActivity.setDefaults(SellerActivity.this, SESSION_KEY_USER_ID,"");
                 SellerActivity.this.startActivity(signoutintent);
             }
         });
@@ -89,7 +91,7 @@ public class SellerActivity extends AppCompatActivity implements NavigationView.
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_sign_out) {
             Intent signoutintent = new Intent(SellerActivity.this, VerifyOtpActivity.class);
-            LoginActivity.setDefaults("UserID","",SellerActivity.this);
+            LoginActivity.setDefaults(SellerActivity.this, SESSION_KEY_USER_ID,"");
             SellerActivity.this.startActivity(signoutintent);
             return true;
         }

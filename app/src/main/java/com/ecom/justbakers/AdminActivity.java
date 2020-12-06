@@ -1,7 +1,6 @@
 package com.ecom.justbakers;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -14,12 +13,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.ecom.justbakers.Classes.ProductClass;
-import com.ecom.justbakers.orders.OrderClass;
+import com.ecom.justbakers.orders.Order;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -157,10 +158,10 @@ public class AdminActivity extends AppCompatActivity {
                             CustomerChangeOrderRef.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    OrderClass obj = (OrderClass) dataSnapshot.getValue(OrderClass.class);
+                                    Order obj = (Order) dataSnapshot.getValue(Order.class);
                                     if (obj != null) {
                                         //OrderClass oc = new OrderClass(obj, "delivered");
-                                        CustomerChangeOrderRef.child("status").setValue("delivered");
+                                        CustomerChangeOrderRef.child("status").setValue(Order.OrderStatus.DELIVERED.getValue());
 
                                         //dataSnapshot.getRef().removeValue();
                                     }
@@ -203,7 +204,9 @@ public class AdminActivity extends AppCompatActivity {
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginActivity.getGoogleSignInClient().signOut()
+                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+                GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(AdminActivity.this, gso);
+                googleSignInClient.signOut()
                         .addOnCompleteListener((Activity) getApplicationContext(), new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {

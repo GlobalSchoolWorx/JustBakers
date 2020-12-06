@@ -1,5 +1,6 @@
 package com.ecom.justbakers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,13 +8,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
-import com.ecom.justbakers.gpay.TempCheckoutActivity;
+import com.ecom.justbakers.orders.InfoClass;
+import com.ecom.justbakers.verify.sms.PhoneAuthActivity;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -27,54 +30,55 @@ import com.google.android.gms.tasks.Task;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import static com.ecom.justbakers.sms_verify.AppSignatureHelper.TAG;
-import static com.ecom.justbakers.sms_verify.PhoneAuthActivity.md5;
+import static com.ecom.justbakers.Utils.md5;
 
 public class LoginActivity extends AppCompatActivity {
-    // UI references.
-    String account_name;
-    static String admin;
-    final int MY_PERMISSIONS_REQUEST_GET_ACCOUNTS = 0;
-    static GoogleSignInClient mGoogleSignInClient;
-    int RC_SIGN_IN = 0;
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
-    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail().build();
+    public static final String SESSION_KEY_USER_ID = "UserID";
+    public static final String SESSION_KEY_GMAIL = "Gmail";
+    public static final String SESSION_KEY_ADMIN_USER = "AdminUser";
+    public static final String SESSION_KEY_DISPLAY_NAME = "Name";
+    public static final String SESSION_KEY_NAME_ON_ORDER = "NameOnOrder";
+    public static final String SESSION_KEY_PHONE_NUMBER = "Phone";
+    public static final String SESSION_KEY_SOCIETY = "Society";
+    public static final String SESSION_KEY_FLAT_NUMBER = "Flat";
+    public static final String SESSION_KEY_PIN_CODE = "Pincode";
 
-    private Firebase cartRef = new Firebase ("https://justbakers-285be.firebaseio.com/customers/");
-    private Firebase adminRef = new Firebase ("https://justbakers-285be.firebaseio.com/admin/");
-    private ValueEventListener vel, admin_vel;
+    private static final int RC_SIGN_IN = 0;
+    private static final int RC_ON_BACK_FROM_LAUNCH = 1;
 
+    private Firebase customersRef = new Firebase ("https://justbakers-285be.firebaseio.com/customers/");
+    private final Firebase adminRef = new Firebase ("https://justbakers-285be.firebaseio.com/admin/");
+    private ValueEventListener adminValueEventListener, customerValueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // REMOVE TITLE AND MAKE ACTIVITY FULLSCREEN
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         ActionBar actionBar = getSupportActionBar();
         if(null != actionBar) {
             actionBar.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.blackback));
             actionBar.setTitle(getResources().getString(R.string.welcome_app_name));
         }
-
         Log.i(TAG, "onCreate:" + "LoginActivity");
         setContentView(R.layout.activity_login);
 
         getAdmin();
         getSignIn();
 
-
-        /*SHIMMERING TEXT VIEW ANIMATIONS*/
-        ShimmerTextView tagline = findViewById(R.id.Tagline);
-        ShimmerTextView tagline2 = findViewById(R.id.Tagline2);
-        ShimmerTextView tagline3 = findViewById(R.id.Tagline3);
+        ShimmerTextView tagline = findViewById(R.id.tagline);
+        ShimmerTextView tagline2 = findViewById(R.id.tagline2);
+        ShimmerTextView tagline3 = findViewById(R.id.tagline3);
         Shimmer shimmer = new Shimmer();
         Shimmer shimmer1 = new Shimmer();
         Shimmer shimmer2 = new Shimmer();
@@ -93,8 +97,6 @@ public class LoginActivity extends AppCompatActivity {
                 .setStartDelay(0)
                 .setDirection(Shimmer.ANIMATION_DIRECTION_LTR)
                 .start(tagline3);
-
-       // mUserView = (AutoCompleteTextView) findViewById(R.id.loginusername);
 
         /* FACEBOOK BUTTON **/
         ImageButton facebook = findViewById(R.id.fb);
@@ -116,41 +118,22 @@ public class LoginActivity extends AppCompatActivity {
         googleMail.setVisibility(View.GONE);
         Linkedin.setVisibility(View.GONE);
         Github.setVisibility(View.GONE);
-
-
-
-        /* ONCLICKLISTENER ON VIEW AS SELLER BUTTON
-        Button mSignInButtonSeller = (Button) findViewById(R.id.sign_in_seller);
-        mSignInButtonSeller.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent sellerintent = new Intent(LoginActivity.this, SellerActivity.class);
-                LoginActivity.this.startActivity(sellerintent);
-            }
-        });
-      */
-        //mSignInButtonSeller.setVisibility(View.GONE);
-
     }
 
-    static String getAdminUser () {
-        return admin;
-    }
     private void getAdmin() {
-
-        admin_vel = new ValueEventListener() {
+        Context cxt = getApplicationContext();
+        adminValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                admin = (String) dataSnapshot.getValue();
-
+                setDefaults(cxt, SESSION_KEY_ADMIN_USER, (String) dataSnapshot.getValue());
             }
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-
+                Log.e(TAG, "The read failed: " + firebaseError.getMessage());
             }
         };
 
-        adminRef.addValueEventListener(admin_vel);
+        adminRef.addValueEventListener(adminValueEventListener);
     }
     // OPENING OF BROWSER FOR PROFILE URLS
     private void goToUrl (String url) {
@@ -162,15 +145,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private void getSignIn() {
         // GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
         Log.i(TAG, "getSignIn:" + "LoginActivity");
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    public static GoogleSignInClient getGoogleSignInClient () {
-        return mGoogleSignInClient;
-    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -183,99 +164,155 @@ public class LoginActivity extends AppCompatActivity {
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
+        }else if(requestCode == RC_ON_BACK_FROM_LAUNCH){
+            Log.i(TAG, "Exiting from application.");
+
+            finish();
         }
     }
 
 
-    public void checkIfExistingCustomer(final String gmail) {
-
-        Log.i(TAG, "checkIfExistingCustomer " + "LoginActivity");
-        vel = new ValueEventListener() {
+    public void checkIfExistingCustomer(final String userId, final String userDisplayName, final String gmail) {
+        Log.i(TAG, "checkIfExistingCustomer ");
+        customersRef = new Firebase("https://justbakers-285be.firebaseio.com/customers/" + userId);
+        Context cxt = getApplicationContext();
+        customerValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.i(TAG, "checkIfExistingCustomer ValueEventListener onDataChange" + "LoginActivity");
-                String [] userId = gmail.split("@");
-                boolean mCustomerFound = false;
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    String dval = postSnapshot.getKey();
+                Log.i(TAG, "checkIfExistingCustomer ValueEventListener onDataChange");
+                String dval = dataSnapshot.getKey();
+                boolean customerFound = dval.equals(userId) && (null != dataSnapshot.getValue());
+                Log.i(TAG, "Customer Found : " + customerFound);
 
-                    if (dval.equals(userId[0])) {
-                        mCustomerFound = true;
-                        Log.i(TAG, "Customer Found" + "LoginActivity");
-                        break;
-                    }
-                }
-
-                if (!mCustomerFound) { // Ask for Registration Details
-                    Log.i(TAG, "Customer Not Found" + "LoginActivity");
-                    Intent userintent = new Intent(getApplicationContext(), TempCheckoutActivity.class);
-                    userintent.putExtra("CONTEXT", "NEW");
-                    startActivity(userintent);
+                customersRef.removeEventListener(this);
+                if (!customerFound) { // Ask for Registration Details
+                    Log.i(TAG, "Starting Auth flow!");
+                    Intent phoneAuthIntent = new Intent(cxt, PhoneAuthActivity.class);
+                    phoneAuthIntent.putExtra(PhoneAuthActivity.INTENT_EXTRA_DATA_USER_DISPLAY_NAME, userDisplayName);
+                    phoneAuthIntent.putExtra(PhoneAuthActivity.INTENT_EXTRA_DATA_GMAIL, gmail);
+                    startActivity(phoneAuthIntent);
                 } else {
-                    String user = LoginActivity.getDefaults("Gmail", getApplicationContext());
-                    /*
-                    if (user.equals(admin)) {
-                        Log.i(TAG, "Admin" + "LoginActivity");
-                        Intent userintent = new Intent(getApplicationContext(), AdminActivity.class);
-                        //Intent userintent = new Intent(LoginActivity.this, PhoneAuthActivity.class);
-                        LoginActivity.this.startActivity(userintent);
-                    } else */
-                    {
-                        Log.i(TAG, "Starting UserActivity" + "LoginActivity");
-                        Intent userintent = new Intent(LoginActivity.this, UserActivity.class);
-                        //Intent userintent = new Intent(LoginActivity.this, PhoneAuthActivity.class);
-                        LoginActivity.this.startActivity(userintent);
+                    if(dataSnapshot.hasChild("info")){
+                        for(DataSnapshot customerInfoDataSnapshot : dataSnapshot.getChildren()){
+                            if("info".equals(customerInfoDataSnapshot.getKey())) {
+                                InfoClass ic = customerInfoDataSnapshot.getValue(InfoClass.class);
+                                List<Pair<String, String>> keyValuePairs = new ArrayList<>();
+                                keyValuePairs.add(new Pair<>(SESSION_KEY_PHONE_NUMBER, ic.getPhoneNumber()));
+                                keyValuePairs.add(new Pair<>(SESSION_KEY_SOCIETY, ic.getSociety()));
+                                keyValuePairs.add(new Pair<>(SESSION_KEY_FLAT_NUMBER, ic.getFlatNumber()));
+                                keyValuePairs.add(new Pair<>(SESSION_KEY_PIN_CODE, ic.getPincode()));
+                                LoginActivity.setDefaults(cxt, keyValuePairs);
+                                break;
+                            }
+                        }
                     }
+
+                    Log.i(TAG, "Starting LaunchActivity");
+                    Intent userIntent = new Intent(cxt, LaunchActivity.class);
+                    userIntent.putExtra(LaunchActivity.INTENT_EXTRA_DATA_USER_DISPLAY_NAME, userDisplayName);
+                    userIntent.putExtra(LaunchActivity.INTENT_EXTRA_DATA_GMAIL, gmail);
+                    startActivityForResult(userIntent, RC_ON_BACK_FROM_LAUNCH);
                 }
             }
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-
+                Log.e(TAG, "The read failed: " + firebaseError.getMessage());
             }
         };
 
-        cartRef.addValueEventListener(vel);
+        customersRef.addValueEventListener(customerValueEventListener);
 
     }
-
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
-            Log.i(TAG, "handleSignInResult " + "LoginActivity");
+            Log.i(TAG, "handleSignInResult Entering...");
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             Log.i(TAG, "handleSignInResult " + "Getting Account Details");
-            account_name = account.getEmail();
-            Log.i(TAG, "handleSignInResult " + account_name);
-            String [] splUserId = account_name.split("@");
+            // UI references.
+            String accountName = account.getEmail();
+            Log.i(TAG, "handleSignInResult AccountName:= " + accountName);
+            String [] splUserId = accountName.split("@");
             String userId = md5 (splUserId[0]);
-            Log.i(TAG, "handleSignInResult User Id " + splUserId[0]);
+            Log.i(TAG, "handleSignInResult User Id:= " + splUserId[0]);
 
-            setDefaults("UserID", userId , this);
-            setDefaults("Gmail", splUserId[0], this);
-            Log.i(TAG, "handleSignInResult" + "LoginActivity");
+            setDefaults(this, SESSION_KEY_DISPLAY_NAME, account.getDisplayName());
+            setDefaults(this, SESSION_KEY_USER_ID, userId);
+            setDefaults(this, SESSION_KEY_GMAIL, splUserId[0]);
             ProgressBar mProgressBar = findViewById(R.id.progressbar);
             mProgressBar.setVisibility(View.GONE);
-            checkIfExistingCustomer (userId);
+            checkIfExistingCustomer (userId, account.getDisplayName(), accountName);
         } catch (ApiException e) {
-
-            Log.i(TAG, "handleSignInResult Exception" + "LoginActivity");
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            //Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            //updateUI(null);
-
+            Log.e(TAG, "handleSignInResult Exception" + "LoginActivity", e);
         }
     }
 
-    /** FUNCTIONS FOR SETTING AND GETTING LOGIN IFNO IN/FROM SHARED PREFS **/
-    public static void setDefaults(String key, String value, Context context) {
+    public static void setDefaults( @NonNull Context context, @NonNull List<Pair<String, String>> keyValuePairs) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(key, value);
+        for(Pair<String, String> keyValuePair : keyValuePairs){
+            if(null != keyValuePair.second) {
+                editor.putString(keyValuePair.first, keyValuePair.second);
+            }else{
+                if(prefs.contains(keyValuePair.first)) {
+                    editor.remove(keyValuePair.first);
+                }
+            }
+        }
         editor.apply();
     }
 
-    public static @NonNull String getDefaults(String key, Context context) {
+    public static void setDefaults( @NonNull Context context,  @NonNull String key, String value) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        if(null != value) {
+            editor.putString(key, value);
+        }else{
+            if(prefs.contains(key)) {
+                editor.remove(key);
+            }
+        }
+
+        editor.apply();
+    }
+
+    public static @NonNull String getLoggedInUser(Context context, boolean scrambled) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if(scrambled) {
+            return preferences.getString(SESSION_KEY_USER_ID, "");
+        }else{
+            return preferences.getString(SESSION_KEY_GMAIL, "");
+        }
+    }
+
+    public static @NonNull Boolean isUserLoggedIn(Context context) {
+        return !("".equals(getLoggedInUser(context, true)));
+    }
+
+    public static @NonNull Boolean isLoggedInUserAdmin(Context context) {
+        return getLoggedInUser(context, false).equals(getDefaults(context, SESSION_KEY_ADMIN_USER));
+    }
+
+    public static void signOut(Activity activity, Runnable callback){
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(activity, gso);
+        googleSignInClient.signOut().addOnCompleteListener(activity, task -> {
+            List<Pair<String, String>> keyValuePairs = new ArrayList<>();
+            keyValuePairs.add(new Pair<>(SESSION_KEY_USER_ID, null));
+            keyValuePairs.add(new Pair<>(SESSION_KEY_GMAIL, null));
+            keyValuePairs.add(new Pair<>(SESSION_KEY_ADMIN_USER, null));
+            keyValuePairs.add(new Pair<>(SESSION_KEY_PHONE_NUMBER, null));
+            keyValuePairs.add(new Pair<>(SESSION_KEY_DISPLAY_NAME, null));
+            keyValuePairs.add(new Pair<>(SESSION_KEY_NAME_ON_ORDER, null));
+            keyValuePairs.add(new Pair<>(SESSION_KEY_SOCIETY, null));
+            keyValuePairs.add(new Pair<>(SESSION_KEY_FLAT_NUMBER, null));
+            keyValuePairs.add(new Pair<>(SESSION_KEY_PIN_CODE, null));
+            LoginActivity.setDefaults(activity, keyValuePairs);
+            callback.run();
+        });
+    }
+
+    public static @NonNull String getDefaults(Context context, String key) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(key, "");
     }
@@ -285,17 +322,22 @@ public class LoginActivity extends AppCompatActivity {
         super.onStop();
         Log.i(TAG, "onStop :" + "LoginActivity");
         try {
-            if (null != cartRef && null != vel) {
-                cartRef.removeEventListener(vel);
+            if (null != customersRef && null != customerValueEventListener) {
+                customersRef.removeEventListener(customerValueEventListener);
             }
 
-            if (null != adminRef && null != admin_vel) {
-                adminRef.removeEventListener(admin_vel);
+            if (null != adminRef && null != adminValueEventListener) {
+                adminRef.removeEventListener(adminValueEventListener);
             }
         }catch (Throwable ignore) {
 
             Log.i(TAG, "onStop Exception " + "LoginActivity");
         }
+    }
+
+    public enum UserType{
+        NEW,
+        EXISTING
     }
 }
 

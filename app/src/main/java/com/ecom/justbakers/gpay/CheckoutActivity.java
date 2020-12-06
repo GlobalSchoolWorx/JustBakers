@@ -1,16 +1,34 @@
 package com.ecom.justbakers.gpay;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.ecom.justbakers.R;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wallet.AutoResolveHelper;
+import com.google.android.gms.wallet.IsReadyToPayRequest;
+import com.google.android.gms.wallet.PaymentData;
+import com.google.android.gms.wallet.PaymentDataRequest;
+import com.google.android.gms.wallet.PaymentsClient;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Optional;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 /*
  * Copyright 2020 Google Inc.
@@ -27,31 +45,6 @@ import org.json.JSONObject;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.text.Html;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
-
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.wallet.AutoResolveHelper;
-import com.google.android.gms.wallet.IsReadyToPayRequest;
-import com.google.android.gms.wallet.PaymentData;
-import com.google.android.gms.wallet.PaymentDataRequest;
-import com.google.android.gms.wallet.PaymentsClient;
-import java.util.Locale;
-import java.util.Optional;
-import org.json.JSONArray;
-import androidx.annotation.NonNull;
 
 
 /**
@@ -78,7 +71,7 @@ public class CheckoutActivity extends AppCompatActivity {
      *
      * @see Activity#onCreate(android.os.Bundle)
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,9 +79,9 @@ public class CheckoutActivity extends AppCompatActivity {
         initializeUi();
 
         // Create notification channels according to Android O+ guidelines
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     //        Notifications.createNotificationChannelIfNotCreated(this);
-        }
+        //}
 /*
         // Set up the mock information for our item in the UI.
         try {
@@ -185,7 +178,6 @@ public class CheckoutActivity extends AppCompatActivity {
         googlePayButton = findViewById(R.id.googlePayButton);
         googlePayButton.setOnClickListener(
                 new View.OnClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onClick(View view) {
                         requestPayment(view);
@@ -218,7 +210,6 @@ public class CheckoutActivity extends AppCompatActivity {
      * PaymentsClient.html#isReadyToPay(com.google.android.gms.wallet.
      * IsReadyToPayRequest)">PaymentsClient#IsReadyToPay</a>
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void possiblyShowGooglePayButton() {
 
         final Optional<JSONObject> isReadyToPayJson = PaymentsUtil.getIsReadyToPayRequest();
@@ -318,7 +309,6 @@ public class CheckoutActivity extends AppCompatActivity {
         Log.w("loadPaymentData failed", String.format("Error code: %d", statusCode));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void requestPayment(View view) {
 
         // Disables the button to prevent multiple clicks.

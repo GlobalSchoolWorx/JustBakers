@@ -8,7 +8,6 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ecom.justbakers.Classes.ProductClass;
 import com.firebase.client.Firebase;
 import com.squareup.picasso.Picasso;
 
@@ -23,7 +22,7 @@ public class SellerDetailsActivity extends AppCompatActivity {
     private static String productid;
     private ArrayList<Integer> BargainPrice;
     private ArrayList<Firebase> BidReferences;
-    private ProductClass Product;
+    private com.ecom.justbakers.Classes.Product Product;
     private static String Username;
 
     @Override
@@ -40,7 +39,7 @@ public class SellerDetailsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         /** GETTING THE INTENT FROM PREVIOUS ACTIVITY TO SHOW PRODUCT DETAILS**/
-        Product = (ProductClass) getIntent().getSerializableExtra("IntentProduct");
+        Product = (com.ecom.justbakers.Classes.Product) getIntent().getSerializableExtra("IntentProduct");
         System.out.println("BBDGsavdgvsavadgsvdgsVCTAVWYT"+Product.getId()+Product.getName());
         /** INITIALISATIONS **/
         ImageView SPImage = (ImageView) findViewById(R.id.SellerProductImageView);

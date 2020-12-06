@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cart_navigation"
+    app:startDestination="@+id/nav_cart">
+
+    <fragment
+        android:id="@+id/nav_cart"
+        android:name="com.ecom.justbakers.fragments.CartFragment"
+        android:label="@string/your_cart"
+        tools:layout="@layout/fragment_cart">
+
+        <action android:id="@+id/action_from_cart_fragment_to_order_confirmation_fragment"
+            app:destination="@id/nav_order_confirmation"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/nav_order_confirmation"
+            app:popUpToInclusive="true"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_order_placed"
+        android:name="com.ecom.justbakers.fragments.OrderPlacedFragment"
+        android:label="@string/order_placed"
+        tools:layout="@layout/fragment_order_placed">
+        <argument android:name="nameOnOrder"
+            app:argType="string" />
+        <argument android:name="totalSummary"
+            app:argType="com.ecom.justbakers.fragments.TotalSummary" />
+        <argument android:name="cartList"
+            app:argType="com.ecom.justbakers.Classes.Product[]"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_order_confirmation"
+        android:name="com.ecom.justbakers.fragments.OrderConfirmationFragment"
+        android:label="@string/confirm_order"
+        tools:layout="@layout/fragment_order_confirmation">
+
+        <argument android:name="totalSummary"
+            app:argType="com.ecom.justbakers.fragments.TotalSummary" />
+        <argument android:name="cartList"
+            app:argType="com.ecom.justbakers.Classes.Product[]"/>
+
+        <action android:id="@+id/action_from_cart_fragment_to_order_placed_fragment"
+            app:destination="@id/nav_order_placed"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/nav_order_placed"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_fade_exit" />
+
+        <action android:id="@+id/action_from_order_confirmation_fragment_to_user_details_fragment"
+            app:destination="@id/nav_user_details"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/nav_user_details"
+            app:popUpToInclusive="true"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_user_details"
+        android:name="com.ecom.justbakers.fragments.UserDetailsFragment"
+        android:label="@string/change_delivery_address"
+        tools:layout="@layout/fragment_user_details">
+
+        <argument android:name="customerName"
+            app:argType="string" />
+        <argument android:name="phoneNumber"
+            app:argType="string"/>
+
+        <action
+            android:id="@+id/action_user_details_to_order_confirmation_fragment"
+            app:destination="@id/nav_order_confirmation"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/nav_order_confirmation"
+            app:popUpToInclusive="true"/>
+
+    </fragment>
+
+</navigation>

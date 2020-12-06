@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.github.vipulasri.timelineview.TimelineView
         android:id="@+id/timeLineView"
-        app:lineOrientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-
-
-           />
-
+        android:layout_height="wrap_content"
+        app:markerSize="20dp"
+        app:lineWidth="2dp"
+        app:startLineColor="@color/design_default_color_primary_dark"
+        app:endLineColor="@color/grey_500"
+        app:lineOrientation="horizontal" />
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        app:cardBackgroundColor="@color/grey_100"
+        android:theme="@style/Theme.MaterialComponents.Light">
     <TextView
         android:id="@+id/textViewOrderDetail"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:gravity="center"
         android:text="TextView"
         android:textAllCaps="true"
         android:textColor="@color/fbutton_color_carrot"
         android:textSize="12dp" />
+    </com.google.android.material.card.MaterialCardView>
 
 
 </LinearLayout>

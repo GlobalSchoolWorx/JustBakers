@@ -10,31 +10,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.ecom.justbakers.UserActivity"
     tools:showIn="@layout/app_bar_user">
-<!--
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@android:drawable/ic_dialog_info"
-        android:background="@drawable/rounded_rectangle"/>
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:textSize="15sp"
-        android:fontFamily="serif"
-        android:text="User TIP-"
-        android:id="@+id/UserTips"
-        android:layout_marginLeft="2dp" />
-       </LinearLayout>
--->
     <TableRow
         android:id="@+id/orderTableHeader"
         android:layout_width="match_parent"
@@ -108,6 +85,40 @@
             app:reflectionColor="#0B0A0A"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
+    <!--
+    <android.support.v7.widget.RecyclerView
+        android:id = "@+id/recycler_view"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:scrollbars = "horizontal" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ListView
+                android:id="@+id/headerList"
+                android:layout_width="400dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:divider="@color/fbutton_color_carrot"
+                android:dividerHeight="1dp"
+                android:gravity="center"></ListView>
+        </LinearLayout>
+    </HorizontalScrollView>
+-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/headerRecycleView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scrollbars="horizontal" />
+
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

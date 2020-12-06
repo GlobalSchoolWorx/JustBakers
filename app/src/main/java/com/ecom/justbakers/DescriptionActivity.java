@@ -8,17 +8,15 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ecom.justbakers.Classes.ProductClass;
+import com.ecom.justbakers.Classes.Product;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 public class DescriptionActivity extends AppCompatActivity {
-    ProductClass ProductDetails;
+    Product ProductDetails;
     private int position;
     @SuppressWarnings("unchecked")
     @Override
@@ -29,7 +27,7 @@ public class DescriptionActivity extends AppCompatActivity {
         /** ENABLING THE HOME BUTTON ON ACTION BAR **/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         /**GETTING THE PRODUCT DETAILS FROM THE INTENT**/
-        ProductDetails = (ProductClass) getIntent().getSerializableExtra("ProductDetails");
+        ProductDetails = (Product) getIntent().getSerializableExtra("ProductDetails");
         position =  getIntent().getIntExtra("SelectedProductPosition", 0);
         /**FINDING THE VIEWS FROM THE LAYOUT OF THIS ACTIVITY**/
         ImageView PImage = (ImageView) findViewById(R.id.ProductImageView);
@@ -158,10 +156,10 @@ public class DescriptionActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // BACK CLICKED. GO TO HOME.
-                Intent intent = new Intent(this, UserActivity.class);
+                /*Intent intent = new Intent(this, UserActivity.class);
                 intent.putExtra("SelectedProductPosition", position);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                startActivity(intent);*/
                 //FINISH THE CURRENT ACTIVITY
                 this.finish();
                 return true;
@@ -173,12 +171,13 @@ public class DescriptionActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         // BACK CLICKED. GO TO HOME.
-        Intent intent = new Intent(this, UserActivity.class);
+        /*Intent intent = new Intent(this, UserActivity.class);
         intent.putExtra("SelectedProductPosition", position);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         //FINISH THE CURRENT ACTIVITY
-        this.finish();
+        this.finish();*/
     }
 }

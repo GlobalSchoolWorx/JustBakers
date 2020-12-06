@@ -3,39 +3,36 @@
     package="com.ecom.justbakers">
 
     <application
-        android:name=".MainActivity"
+        android:name=".JustBakersApplication"
         android:allowBackup="true"
         android:icon="@drawable/jb"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".LaunchActivity" android:label="@string/app_name" android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".AdminActivity" />
-        <activity android:name=".sms_verify.PhoneAuthActivity" />
-        <activity android:name=".sms_verify.VerifyOtpActivity" />
-        <activity android:name=".OrderConfirmationActivity" />
-        <activity android:name=".gpay.TempCheckoutActivity" />
-        <activity android:name=".gpay.PaymentsUtil" />
+        <activity android:name=".verify.sms.PhoneAuthActivity" />
+        <activity android:name=".verify.sms.VerifyOtpActivity" />
+        <activity android:name=".UserDetailsActivity" />
+       <!-- <activity android:name=".gpay.PaymentsUtil" />-->
         <activity android:name=".gpay.CheckoutActivity" />
-        <activity
-            android:name=".UserActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".BargainCartActivity"
             android:label="@string/title_activity_hawk"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".CartActivity"
+            android:name=".CartNavigationActivity"
             android:label="@string/action_cart" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
-
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity android:name=".DescriptionActivity" />
         <activity android:name=".ChatActivity" />
@@ -49,6 +46,7 @@
     <meta-data
         android:name="com.google.android.gms.wallet.api.enabled"
         android:value="true" />
-     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

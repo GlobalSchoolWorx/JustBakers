@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Welcome to Just Bakers"
+        android:text="@string/welcome_to_just_bakers"
 
          />
 
@@ -34,7 +34,7 @@
         android:orientation="horizontal"
         >
     <TextView
-        android:id="@+id/Email"
+        android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="android.studio@android.com" />
@@ -42,10 +42,10 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:text="Sign Out"
+            android:text="@string/sign_out"
             android:id="@+id/signout"
             android:background="@drawable/side_nav_bar"
-            android:layout_marginLeft="20dp" />
+            android:layout_marginStart="20dp" />
 
     </LinearLayout>
 

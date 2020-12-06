@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 
-/**
- * Created by brainbreaker.
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DemandProductClass implements Serializable {
     private String name;

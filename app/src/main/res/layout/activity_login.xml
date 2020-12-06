@@ -105,7 +105,7 @@
         android:orientation="vertical">
 
         <com.romainpiel.shimmer.ShimmerTextView
-            android:id="@+id/Tagline"
+            android:id="@+id/tagline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -116,7 +116,7 @@
             android:textSize="30sp"
             app:reflectionColor="#0B0A0A" />
         <com.romainpiel.shimmer.ShimmerTextView
-            android:id="@+id/Tagline2"
+            android:id="@+id/tagline2"
             android:text=""
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
             app:reflectionColor="@color/colorAccent"
             android:layout_gravity="center_horizontal" />
         <com.romainpiel.shimmer.ShimmerTextView
-            android:id="@+id/Tagline3"
+            android:id="@+id/tagline3"
             android:text="Bakers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

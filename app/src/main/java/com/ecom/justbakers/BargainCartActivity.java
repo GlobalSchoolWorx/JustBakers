@@ -13,15 +13,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecom.justbakers.Adapters.CustomBargainCartAdapter;
-import com.ecom.justbakers.Adapters.CustomProductListAdapter;
-import com.ecom.justbakers.Classes.BargainProductClass;
-import com.ecom.justbakers.Classes.ProductClass;
+import com.ecom.justbakers.Adapters.ProductListAdapter;
+import com.ecom.justbakers.Classes.BargainProduct;
+import com.ecom.justbakers.Classes.Product;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,7 +30,7 @@ import androidx.appcompat.widget.Toolbar;
 
 public class BargainCartActivity extends AppCompatActivity {
     private ProgressDialog progress;
-    private static ArrayList<BargainProductClass> BargainProductList;
+    private static ArrayList<BargainProduct> BargainProductList;
     private static CustomBargainCartAdapter adapter;
     private ArrayList<String> BargainID;
     @SuppressWarnings("unchecked")
@@ -68,9 +69,9 @@ public class BargainCartActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.e("child event listener",dataSnapshot.getValue().toString());
 
-                    BargainProductClass BargainCartProduct = dataSnapshot.getValue(BargainProductClass.class);
+                    BargainProduct BargainCartProduct = dataSnapshot.getValue(BargainProduct.class);
                     //Defining new variable so that we can access data according to sequence defined in class constructor
-                    BargainProductClass bargainedproduct = new BargainProductClass(BargainCartProduct.getName()
+                    BargainProduct bargainedproduct = new BargainProduct(BargainCartProduct.getName()
                             ,BargainCartProduct.getImage()
                             ,BargainCartProduct.getPrice()
                             ,BargainCartProduct.getbidValue()
@@ -95,11 +96,11 @@ public class BargainCartActivity extends AppCompatActivity {
                     text.setText(" YOU HAVEN'T USED YOUR BARGAINING SKILLS YET! ");
                     text.setTextColor(getResources().getColor(R.color.colorWhite));
                     toast.show();
-                    Intent intent = new Intent(BargainCartActivity.this, UserActivity.class);
+                    Intent intent = new Intent(BargainCartActivity.this, LaunchActivity.class);
                     BargainCartActivity.this.startActivity(intent);
                 }
                 else {
-                    adapter = new CustomBargainCartAdapter(BargainProductList, BargainID, getLayoutInflater(), BargainCartActivity.this, new CustomProductListAdapter.ButtonClickListener() {
+                    adapter = new CustomBargainCartAdapter(BargainProductList, BargainID, getLayoutInflater(), BargainCartActivity.this, new ButtonClickListener() {
                         /**
                          * CODE FOR DELETE BUTTON ON EACH ITEM- CREATED THE FIREBASE REFERENCE AND REMOVED VALUE FROM IT, RELOADED THE ACTIVITY
                          **/
@@ -117,18 +118,19 @@ public class BargainCartActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                     }     /**ON CLICK LISTENER FOR THE 'MOVE TO CART' LINEAR LAYOUT **/
-                            , new CustomProductListAdapter.ButtonClickListener() {
+                            , new ButtonClickListener() {
                         @Override
                         public void onButtonClick(int position,View v) {
                             /**GETTING THE CURRENT BARGAIN REQUEST PRODUCT AND MOVING IT TO CART**/
                             Firebase CartRef = new Firebase("https://justbakers-285be.firebaseio.com/")
                                     .child("Carts");
                             /**TAKE THE CURRENT PRODUCT OF BARGAINPRODUCTCLASS AND RETRIEVE VALUES FROM IT.**/
-                            BargainProductClass currentProduct = BargainProductList.get(position);
+                            BargainProduct currentProduct = BargainProductList.get(position);
 
-                            ProductClass ProductCart = new ProductClass(currentProduct.getName()
+                            Product ProductCart = new Product(currentProduct.getName()
                                     , currentProduct.getImage()
                                     , currentProduct.getbidValue()
+                                    , 0.0
                                     , currentProduct.getDescription(), currentProduct.getSeller(), currentProduct.getId(),currentProduct.getQuantity()
                                     , currentProduct.getLimit());
                             CartRef.child(currentProduct.getId()).setValue(ProductCart);
@@ -195,7 +197,7 @@ public class BargainCartActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent DescriptionIntent = new Intent(BargainCartActivity.this, DescriptionActivity.class);
-                DescriptionIntent.putExtra("ProductDetails",BargainProductList.get(position));
+                DescriptionIntent.putExtra("ProductDetails", (Serializable) BargainProductList.get(position));
                 BargainCartActivity.this.startActivity(DescriptionIntent);
             }
         });
@@ -220,7 +222,7 @@ public class BargainCartActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // BACK CLICKED. GO TO HOME.
-                Intent intent = new Intent(this, UserActivity.class);
+                Intent intent = new Intent(this, LaunchActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 //FINISH THE CURRENT ACTIVITY
@@ -229,5 +231,9 @@ public class BargainCartActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public interface ButtonClickListener {
+        void onButtonClick(int position, View view);
     }
 }

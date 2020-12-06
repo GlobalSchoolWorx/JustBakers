@@ -1,170 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
 <LinearLayout
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFF"
+    android:orientation="horizontal"
     android:focusable="false"
-    android:descendantFocusability="blocksDescendants" >
+    android:descendantFocusability="blocksDescendants">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_view"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:background="#FFF"
-        card_view:cardBackgroundColor="#FFF"
-        card_view:cardElevation="10dp"
-        card_view:cardCornerRadius="4dp"
+    <ImageView
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:scaleType="centerCrop"
+        android:id="@+id/pimageview"
+        android:src="@drawable/jb"
+        android:contentDescription="@string/product_image"
+        android:padding="5dp"
         android:focusable="false"
-        >
+        android:layout_gravity="center"
+        android:foregroundGravity="center"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:orientation="vertical"
+        android:padding="4dp"
+        android:focusable="false">
+
+        <TextView
+            android:id="@+id/productname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/product_title"
+            android:fontFamily="sans-serif"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:focusable="false"/>
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/productprice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/product_price"
+                android:fontFamily="sans-serif"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:focusable="false"/>
+            <TextView
+                android:id="@+id/discountTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/off"
+                android:background="@color/fbutton_color_carrot"
+                android:fontFamily="sans-serif"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:focusable="false"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/discountPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/product_price"
+            android:fontFamily="sans-serif"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:focusable="false"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/seller"
+            android:id="@+id/sellername"
+            android:fontFamily="sans-serif"
+            android:focusable="false"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
+
             android:focusable="false">
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/pimageview"
-                android:src="@drawable/jb"
-                android:padding="10dp"
-                android:focusable="false"/>
-
-            <View
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="#AE6F33"
-                android:focusable="false"
-                />
-
-
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:orientation="vertical"
-                android:padding="10dp"
-                android:focusable="false"
-                >
-
-                <TextView
-                    android:id="@+id/productname"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Product Title"
-                    android:fontFamily="sans-serif"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:focusable="false"/>
-                <TextView
-                    android:id="@+id/productprice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Product Price"
-                    android:fontFamily="sans-serif"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:focusable="false"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:text="Seller"
-                    android:id="@+id/sellername"
-                    android:fontFamily="sans-serif"
-                    android:focusable="false"
-                    />
-            </LinearLayout>
-
-
-            <View
-                android:id="@+id/view3"
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/fbutton_color_carrot"
-                android:focusable="false" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:orientation="vertical"
-                android:focusable="false"
-                >
-
-                <TextView
-                    android:id="@+id/incr_quantity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="25dp"
-                    android:text="+"
-                    android:fontFamily="sans-serif"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:focusable="false"/>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#AE6F33"
-                    android:focusable="false"
-                    />
-                <TextView
-                    android:id="@+id/productquantity"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginLeft="25dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4"
-                    android:fontFamily="sans-serif"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:focusable="false"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#AE6F33"
-                    android:focusable="false"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="25dp"
-                    android:textSize="20sp"
-                    android:text="-"
-                    android:id="@+id/decr_quantity"
-                    android:textStyle="bold"
-                    android:fontFamily="sans-serif"
-                    android:focusable="false"
-                    />
-            </LinearLayout>
-
-
-
-            <View
-                android:id="@+id/view2"
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/fbutton_color_carrot"
-                android:focusable="false" />
-
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:background="@drawable/transparent_border"
+                android:focusable="false">
             <ImageButton
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/DeleteButton"
-                android:src="@android:drawable/ic_menu_delete"
-                android:background="#fffefe"
+                android:id="@+id/incr_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/plus"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"
+                android:focusable="false"
+                android:background="@drawable/plus"
+                android:scaleType="center"
+                />
+            <TextView
+                android:id="@+id/productquantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sample_number"
+                android:fontFamily="sans-serif"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="center"
                 android:focusable="false"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="center"
+                android:id="@+id/decr_quantity"
+                android:contentDescription="@string/minus"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif"
+                android:focusable="false"
+                android:background="@drawable/minus"
+                />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center|end">
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/deleteButton"
+                    android:src="@android:drawable/ic_menu_delete"
+                    android:background="#fffffefe"
+                    android:contentDescription="@string/delete"
+                    android:focusable="false"
+                    />
+            </LinearLayout>
 
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </LinearLayout>
 </LinearLayout>
-</ScrollView>

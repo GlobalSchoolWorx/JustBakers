@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/contacts_shimmer_text_view"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <com.romainpiel.shimmer.ShimmerTextView
+        android:id="@+id/Tagline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:fontFamily="serif"
+        android:textStyle="bold"
+        android:text="@string/bakersjust_gmail_com"
+        android:textColor="@color/fbutton_color_carrot"
+        android:textSize="20sp"
+        app:reflectionColor="#0B0A0A" />
+    <com.romainpiel.shimmer.ShimmerTextView
+        android:id="@+id/Tagline2"
+        android:text="@string/helpline_number"
+        android:layout_marginTop="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/fbutton_color_carrot"
+        android:fontFamily="serif"
+        android:textSize="20sp"
+        app:reflectionColor="@color/colorAccent"
+        android:layout_gravity="center_horizontal" />
+    <com.romainpiel.shimmer.ShimmerTextView
+        android:id="@+id/Tagline3"
+        android:text="8806420616"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/fbutton_color_carrot"
+        android:fontFamily="serif"
+        android:textSize="30sp"
+        app:reflectionColor="#0B0A0A"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>
+

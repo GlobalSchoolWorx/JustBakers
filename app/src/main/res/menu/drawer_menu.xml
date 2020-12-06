@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_menu_products"
+            android:icon="@drawable/icons8_home_page_30"
+            android:title="@string/products" />
+
+        <item
+            android:id="@+id/nav_menu_orders"
+            android:icon="@drawable/icons8_purchase_order_48"
+            android:title="@string/your_orders" />
+
+        <item
+            android:id="@+id/nav_menu_admin"
+            android:icon="@drawable/icons8_track_order_24"
+            android:title="@string/customer_orders" />
+    </group>
+
+    <item android:title="@string/communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_menu_contact"
+                android:icon="@drawable/ic_menu_send"
+                android:title="@string/contact_us" />
+        </menu>
+    </item>
+
+</menu>

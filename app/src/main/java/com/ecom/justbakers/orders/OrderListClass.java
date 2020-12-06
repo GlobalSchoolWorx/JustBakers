@@ -2,7 +2,6 @@ package com.ecom.justbakers.orders;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class OrderListClass implements Serializable {
 /*
@@ -16,19 +15,19 @@ public class OrderListClass implements Serializable {
     public OrderListClass() {
 
     }
-    ArrayList<OrderClass> pending;
-    ArrayList<OrderClass> placed;
-    ArrayList<OrderClass> delivered;
+    ArrayList<Order> pending;
+    ArrayList<Order> placed;
+    ArrayList<Order> delivered;
 
-    public ArrayList<OrderClass> getPending() {
+    public ArrayList<Order> getPending() {
         return pending;
     }
 
-    public ArrayList<OrderClass> getPlaced() {
+    public ArrayList<Order> getPlaced() {
         return placed;
     }
 
-    public ArrayList<OrderClass> getDelivered() {
+    public ArrayList<Order> getDelivered() {
         return delivered;
     }
 }

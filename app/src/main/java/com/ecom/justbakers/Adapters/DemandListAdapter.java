@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ecom.justbakers.BargainCartActivity;
 import com.ecom.justbakers.Classes.DemandProductClass;
 import com.ecom.justbakers.R;
 import com.squareup.picasso.Picasso;
@@ -23,11 +24,11 @@ import java.util.List;
 public class DemandListAdapter extends BaseAdapter {
 
     private List<DemandProductClass> mDemandProductList;
-    private CustomProductListAdapter.ButtonClickListener mAddtoStockClickListener = null;
+    private BargainCartActivity.ButtonClickListener mAddtoStockClickListener = null;
     private LayoutInflater mInflater;
     private Context context;
     public DemandListAdapter(ArrayList<DemandProductClass> DemandProductList, LayoutInflater inflater
-            , Context context,CustomProductListAdapter.ButtonClickListener mAddtoStockClickListener) {
+            , Context context, BargainCartActivity.ButtonClickListener mAddtoStockClickListener) {
         mDemandProductList = DemandProductList;
         mInflater = inflater;
         this.context = context;

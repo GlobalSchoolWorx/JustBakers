@@ -7,50 +7,43 @@
     android:layout_margin="20dp"
     android:stretchColumns="1">
 
-    <TableRow android:background="@color/colorWhite" android:padding="5dp"
+    <TableRow android:id = "@+id/table_row" android:background="@color/colorWhite" android:padding="5dp"
         android:layout_marginBottom="10dp">
         <TextView
             android:id = "@+id/btn_custname"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.3"
             android:text="24th May 2020"
             />
 
         <TextView
             android:id = "@+id/btn_orderamount"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text=""
-            />/>
-
-        <TextView
-            android:id = "@+id/tv_orderdetails"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:visibility="gone"
-            android:text=""
+            android:layout_weight="0.3"
+            android:text="210"
             />
 
         <TextView
             android:id = "@+id/cart_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="" />
+            android:layout_weight="0.6"
+            android:text="sfdsdfsdfsdfsdfsdfsdf\nsdfsdf" />
         <LinearLayout
-            android:layout_weight = "1"
+            android:layout_weight = "0.4"
             android:layout_width="0dp"
             android:orientation="vertical"
+            android:visibility="gone"
             android:layout_height="wrap_content" >
             <Button
                 android:id="@+id/confirmOrderBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Confrim" />
+                android:text="Confirm" />
 
             <Button
                 android:id="@+id/processOrderBtn"

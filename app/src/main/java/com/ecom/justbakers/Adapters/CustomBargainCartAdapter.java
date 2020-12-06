@@ -16,11 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecom.justbakers.BargainCartActivity;
 import com.ecom.justbakers.ChatActivity;
-import com.ecom.justbakers.Classes.BargainProductClass;
+import com.ecom.justbakers.Classes.BargainProduct;
 import com.ecom.justbakers.LoginActivity;
 import com.ecom.justbakers.R;
-import com.ecom.justbakers.sms_verify.VerifyOtpActivity;
 import com.firebase.client.Firebase;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -32,18 +32,18 @@ import java.util.List;
  * Created by brainbreaker. CUSTOM ADAPTER OF BARGAIN REQUEST LIST OR BARGAIN CART.
  */
 public class CustomBargainCartAdapter extends BaseAdapter {
-    private CustomProductListAdapter.ButtonClickListener mdeleteClickListener = null;
-    private CustomProductListAdapter.ButtonClickListener mCartClickListener = null;
-    private List<BargainProductClass>mBargainCartProductList;
+    private BargainCartActivity.ButtonClickListener mdeleteClickListener = null;
+    private BargainCartActivity.ButtonClickListener mCartClickListener = null;
+    private List<BargainProduct>mBargainCartProductList;
     private ArrayList<String> bidid;
     private LayoutInflater mInflater;
     private Context context;
-    public CustomBargainCartAdapter(ArrayList<BargainProductClass> BargainCartProductList
+    public CustomBargainCartAdapter(ArrayList<BargainProduct> BargainCartProductList
             , ArrayList<String> bidid
             , LayoutInflater inflater
             , Context context
-            , CustomProductListAdapter.ButtonClickListener mdeleteClickListener
-            ,CustomProductListAdapter.ButtonClickListener mCartClickListener) {
+            , BargainCartActivity.ButtonClickListener mdeleteClickListener
+            , BargainCartActivity.ButtonClickListener mCartClickListener) {
         mBargainCartProductList = BargainCartProductList;
         mInflater = inflater;
         this.context = context;
@@ -58,7 +58,7 @@ public class CustomBargainCartAdapter extends BaseAdapter {
     }
 
     @Override
-    public BargainProductClass getItem(int position) {
+    public BargainProduct getItem(int position) {
         return mBargainCartProductList.get(position);
     }
 
@@ -103,7 +103,7 @@ public class CustomBargainCartAdapter extends BaseAdapter {
         item.offer.setVisibility(View.GONE);
         item.ViewOffer.setVisibility(View.GONE);
 
-        final BargainProductClass curProduct = mBargainCartProductList.get(position);
+        final BargainProduct curProduct = mBargainCartProductList.get(position);
 
         Picasso picasso = Picasso.with(context);
         picasso.setIndicatorsEnabled(false);
@@ -212,7 +212,7 @@ public class CustomBargainCartAdapter extends BaseAdapter {
                     Button acceptoffer = (Button) dialog.findViewById(R.id.acceptofferbutton);
                     Button rejectoffer = (Button) dialog.findViewById(R.id.rejectofferbutton);
                     Button offerDialogChatButton = (Button) dialog.findViewById(R.id.offerchatbutton);
-                    final String username = LoginActivity.getDefaults("UserID",context);
+                    final String username = LoginActivity.getLoggedInUser(context, false);
 
                     offerUsername.setText("HELLO "+ username +".");
                     offersellername.setText("Seller "+ curProduct.getSeller() +" gave you an offer!");
